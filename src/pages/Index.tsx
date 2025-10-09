@@ -1,4 +1,4 @@
-import { useState, useRef, useEffect } from "react";
+import { useState, useRef, useEffect, useCallback } from "react";
 import { motion } from "framer-motion";
 import { Navbar } from "@/components/Navbar";
 import { URLInput } from "@/components/URLInput";
@@ -17,7 +17,7 @@ const Index = () => {
   const playerRef = useRef<VideoPlayerRef>(null);
   const awayTimerRef = useRef<NodeJS.Timeout>();
 
-  const handleGazeChange = (watching: boolean) => {
+  const handleGazeChange = useCallback((watching: boolean) => {
     if (!detectionEnabled) return;
 
     if (watching) {
@@ -27,11 +27,9 @@ const Index = () => {
         awayTimerRef.current = undefined;
       }
       
-      // Play video if not already watching
-      if (!isWatching) {
-        setIsWatching(true);
-        playerRef.current?.play();
-      }
+      // Always play when user looks back
+      setIsWatching(true);
+      playerRef.current?.play();
     } else {
       // Start pause timer if not already started
       if (!awayTimerRef.current && isWatching) {
@@ -42,7 +40,7 @@ const Index = () => {
         }, pauseDelay * 1000);
       }
     }
-  };
+  }, [detectionEnabled, isWatching, pauseDelay]);
 
   useEffect(() => {
     return () => {
