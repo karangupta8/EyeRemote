@@ -14,6 +14,7 @@ export function GazeDetector({ onGazeChange, isEnabled, showPreview = false }: G
   const faceLandmarkerRef = useRef<FaceLandmarker | null>(null);
   const animationFrameRef = useRef<number>();
   const [isInitialized, setIsInitialized] = useState(false);
+  const lastDetectionStateRef = useRef<boolean | null>(null);
 
   useEffect(() => {
     let stream: MediaStream | null = null;
@@ -93,7 +94,12 @@ export function GazeDetector({ onGazeChange, isEnabled, showPreview = false }: G
         
         // Detect if face is present and looking at screen
         const isFaceDetected = results.faceLandmarks && results.faceLandmarks.length > 0;
-        onGazeChange(isFaceDetected);
+        
+        // Only trigger callback if state changed
+        if (lastDetectionStateRef.current !== isFaceDetected) {
+          lastDetectionStateRef.current = isFaceDetected;
+          onGazeChange(isFaceDetected);
+        }
       }
 
       animationFrameRef.current = requestAnimationFrame(predictWebcam);
