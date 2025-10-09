@@ -24,13 +24,14 @@ const getEmbedUrl = (url: string): { type: 'youtube' | 'vimeo' | 'video'; embedU
     };
   }
 
-  // Vimeo patterns
-  const vimeoRegex = /vimeo\.com\/(\d+)/;
+  // Vimeo patterns - improved to handle all vimeo URL formats
+  const vimeoRegex = /vimeo\.com\/(?:channels\/(?:\w+\/)?|groups\/([^/]*)\/videos\/|album\/(\d+)\/video\/|video\/|)(\d+)(?:$|\/|\?)/;
   const vimeoMatch = url.match(vimeoRegex);
   if (vimeoMatch) {
+    const videoId = vimeoMatch[3];
     return {
       type: 'vimeo',
-      embedUrl: `https://player.vimeo.com/video/${vimeoMatch[1]}`
+      embedUrl: `https://player.vimeo.com/video/${videoId}?api=1`
     };
   }
 

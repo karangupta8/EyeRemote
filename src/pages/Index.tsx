@@ -4,12 +4,10 @@ import { Navbar } from "@/components/Navbar";
 import { URLInput } from "@/components/URLInput";
 import { VideoPlayer, VideoPlayerRef } from "@/components/VideoPlayer";
 import { GazeDetector } from "@/components/GazeDetector";
-import { SettingsPanel } from "@/components/SettingsPanel";
 
 const Index = () => {
   const [videoUrl, setVideoUrl] = useState("");
   const [isWatching, setIsWatching] = useState(true);
-  const [settingsOpen, setSettingsOpen] = useState(false);
   const [pauseDelay, setPauseDelay] = useState(2);
   const [detectionEnabled, setDetectionEnabled] = useState(true);
   const [previewEnabled, setPreviewEnabled] = useState(false);
@@ -52,7 +50,14 @@ const Index = () => {
 
   return (
     <div className="min-h-screen bg-background">
-      <Navbar onOpenSettings={() => setSettingsOpen(true)} />
+      <Navbar
+        pauseDelay={pauseDelay}
+        onPauseDelayChange={setPauseDelay}
+        detectionEnabled={detectionEnabled}
+        onDetectionToggle={setDetectionEnabled}
+        previewEnabled={previewEnabled}
+        onPreviewToggle={setPreviewEnabled}
+      />
       
       {/* Background gradient effect */}
       <div className="fixed inset-0 bg-gradient-glow pointer-events-none" />
@@ -123,17 +128,6 @@ const Index = () => {
         onGazeChange={handleGazeChange}
         isEnabled={detectionEnabled && !!videoUrl}
         showPreview={previewEnabled}
-      />
-
-      <SettingsPanel
-        isOpen={settingsOpen}
-        onClose={() => setSettingsOpen(false)}
-        pauseDelay={pauseDelay}
-        onPauseDelayChange={setPauseDelay}
-        detectionEnabled={detectionEnabled}
-        onDetectionToggle={setDetectionEnabled}
-        previewEnabled={previewEnabled}
-        onPreviewToggle={setPreviewEnabled}
       />
     </div>
   );

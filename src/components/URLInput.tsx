@@ -53,7 +53,7 @@ export function URLInput({ onVideoLoad }: URLInputProps) {
         <span className="text-sm text-muted-foreground">Try:</span>
         {[
           "https://www.youtube.com/watch?v=dQw4w9WgXcQ",
-          "https://vimeo.com/148751763"
+          "https://vimeo.com/76979871"
         ].map((exampleUrl, index) => (
           <button
             key={index}
