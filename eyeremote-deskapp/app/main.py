@@ -320,19 +320,17 @@ class EyeRemoteApp:
 
                     # If media was paused, resume it
                     if self.media_paused:
-                        # Check if the target app is active before resuming
-                        if self.is_target_app_active():
-                            self.send_media_key_event()
-                            self.media_paused = False
-                            self.log_message("Media resumed - eyes detected")
+                        # Send media key (will focus target app automatically)
+                        self.send_media_key_event()
+                        self.media_paused = False
+                        self.log_message("Media resumed - eyes detected")
                 else:
                     # If eyes are not detected, check if we need to pause
                     if not self.media_paused and self.last_eye_seen and (current_time - self.last_eye_seen > timeout_duration):
-                        # Check if the target app is active before pausing
-                        if self.is_target_app_active():
-                            self.send_media_key_event()
-                            self.media_paused = True
-                            self.log_message(f"Media paused - eyes not detected for {timeout_seconds}s")
+                        # Send media key (will focus target app automatically)
+                        self.send_media_key_event()
+                        self.media_paused = True
+                        self.log_message(f"Media paused - eyes not detected for {timeout_seconds}s")
                 
                 # Update status
                 self.root.after(0, lambda: self.status_var.set("Detecting"))
