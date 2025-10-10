@@ -11,6 +11,7 @@ const Index = () => {
   const [pauseDelay, setPauseDelay] = useState(2);
   const [detectionEnabled, setDetectionEnabled] = useState(true);
   const [previewEnabled, setPreviewEnabled] = useState(false);
+  const [detectionError, setDetectionError] = useState<string | null>(null);
   
   const playerRef = useRef<VideoPlayerRef>(null);
   const awayTimerRef = useRef<NodeJS.Timeout>();
@@ -109,6 +110,7 @@ const Index = () => {
                 url={videoUrl}
                 isWatching={isWatching}
                 isDetectionEnabled={detectionEnabled}
+                error={detectionError}
               />
               
               <div className="flex justify-center">
@@ -126,6 +128,7 @@ const Index = () => {
 
       <GazeDetector
         onGazeChange={handleGazeChange}
+        onError={setDetectionError}
         isEnabled={detectionEnabled && !!videoUrl}
         showPreview={previewEnabled}
       />

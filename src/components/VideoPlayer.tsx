@@ -6,6 +6,7 @@ interface VideoPlayerProps {
   url: string;
   isWatching: boolean;
   isDetectionEnabled: boolean;
+  error?: string | null;
 }
 
 export interface VideoPlayerRef {
@@ -43,7 +44,7 @@ const getEmbedUrl = (url: string): { type: 'youtube' | 'vimeo' | 'video'; embedU
 };
 
 export const VideoPlayer = forwardRef<VideoPlayerRef, VideoPlayerProps>(
-  ({ url, isWatching, isDetectionEnabled }, ref) => {
+  ({ url, isWatching, isDetectionEnabled, error }, ref) => {
     const videoRef = useRef<HTMLVideoElement>(null);
     const iframeRef = useRef<HTMLIFrameElement>(null);
     const [embedInfo, setEmbedInfo] = useState<ReturnType<typeof getEmbedUrl> | null>(null);
@@ -85,7 +86,7 @@ export const VideoPlayer = forwardRef<VideoPlayerRef, VideoPlayerProps>(
         className="relative w-full max-w-5xl mx-auto"
       >
         <div className="absolute -top-12 right-0 z-10">
-          <StatusIndicator isWatching={isWatching} isDetectionEnabled={isDetectionEnabled} />
+          <StatusIndicator isWatching={isWatching} isDetectionEnabled={isDetectionEnabled} error={error} />
         </div>
         
         <div className="relative aspect-video rounded-xl overflow-hidden bg-card border border-border shadow-glow">

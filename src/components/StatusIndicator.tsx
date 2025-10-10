@@ -1,12 +1,53 @@
 import { motion } from "framer-motion";
-import { Eye, EyeOff } from "lucide-react";
+import { Eye, EyeOff, AlertCircle, Camera, CameraOff } from "lucide-react";
 
 interface StatusIndicatorProps {
   isWatching: boolean;
   isDetectionEnabled: boolean;
+  error?: string | null;
 }
 
-export function StatusIndicator({ isWatching, isDetectionEnabled }: StatusIndicatorProps) {
+export function StatusIndicator({ isWatching, isDetectionEnabled, error }: StatusIndicatorProps) {
+  // Show error states
+  if (error === "permission-denied") {
+    return (
+      <motion.div
+        initial={{ scale: 0.9, opacity: 0 }}
+        animate={{ scale: 1, opacity: 1 }}
+        className="flex items-center gap-2 px-4 py-2 rounded-full bg-destructive/10 border border-destructive/30"
+      >
+        <CameraOff className="w-4 h-4 text-destructive" />
+        <span className="text-sm font-medium text-destructive">Camera Permission Denied</span>
+      </motion.div>
+    );
+  }
+
+  if (error === "no-camera") {
+    return (
+      <motion.div
+        initial={{ scale: 0.9, opacity: 0 }}
+        animate={{ scale: 1, opacity: 1 }}
+        className="flex items-center gap-2 px-4 py-2 rounded-full bg-destructive/10 border border-destructive/30"
+      >
+        <Camera className="w-4 h-4 text-destructive" />
+        <span className="text-sm font-medium text-destructive">No Camera Found</span>
+      </motion.div>
+    );
+  }
+
+  if (error === "initialization-failed" || error === "camera-error") {
+    return (
+      <motion.div
+        initial={{ scale: 0.9, opacity: 0 }}
+        animate={{ scale: 1, opacity: 1 }}
+        className="flex items-center gap-2 px-4 py-2 rounded-full bg-destructive/10 border border-destructive/30"
+      >
+        <AlertCircle className="w-4 h-4 text-destructive" />
+        <span className="text-sm font-medium text-destructive">Detection Error</span>
+      </motion.div>
+    );
+  }
+
   if (!isDetectionEnabled) {
     return (
       <div className="flex items-center gap-2 px-4 py-2 rounded-full bg-muted/50 border border-border">

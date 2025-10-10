@@ -4,11 +4,12 @@ import { toast } from "sonner";
 
 interface GazeDetectorProps {
   onGazeChange: (isWatching: boolean) => void;
+  onError: (error: string | null) => void;
   isEnabled: boolean;
   showPreview?: boolean;
 }
 
-export function GazeDetector({ onGazeChange, isEnabled, showPreview = false }: GazeDetectorProps) {
+export function GazeDetector({ onGazeChange, onError, isEnabled, showPreview = false }: GazeDetectorProps) {
   const videoRef = useRef<HTMLVideoElement>(null);
   const canvasRef = useRef<HTMLCanvasElement>(null);
   const faceLandmarkerRef = useRef<FaceLandmarker | null>(null);
@@ -36,9 +37,11 @@ export function GazeDetector({ onGazeChange, isEnabled, showPreview = false }: G
 
         faceLandmarkerRef.current = faceLandmarker;
         setIsInitialized(true);
+        onError(null);
         toast.success("Gaze detection initialized");
       } catch (error) {
         console.error("Failed to initialize face landmarker:", error);
+        onError("initialization-failed");
         toast.error("Failed to initialize gaze detection");
       }
     };
@@ -53,9 +56,19 @@ export function GazeDetector({ onGazeChange, isEnabled, showPreview = false }: G
           videoRef.current.srcObject = stream;
           videoRef.current.addEventListener('loadeddata', predictWebcam);
         }
-      } catch (error) {
+        onError(null);
+      } catch (error: any) {
         console.error("Failed to access webcam:", error);
-        toast.error("Failed to access webcam");
+        if (error.name === 'NotAllowedError' || error.name === 'PermissionDeniedError') {
+          onError("permission-denied");
+          toast.error("Camera permission denied. Please allow camera access.");
+        } else if (error.name === 'NotFoundError') {
+          onError("no-camera");
+          toast.error("No camera found. Please connect a camera.");
+        } else {
+          onError("camera-error");
+          toast.error("Failed to access webcam");
+        }
       }
     };
 
@@ -118,7 +131,7 @@ export function GazeDetector({ onGazeChange, isEnabled, showPreview = false }: G
         stream.getTracks().forEach(track => track.stop());
       }
     };
-  }, [isEnabled, onGazeChange, showPreview]);
+  }, [isEnabled, onGazeChange, onError, showPreview]);
 
   if (!isEnabled || !showPreview) {
     return null;
