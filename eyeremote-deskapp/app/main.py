@@ -25,7 +25,7 @@ class EyeRemoteApp:
     def __init__(self):
         self.root = ctk.CTk()
         self.root.title("EyeRemote - Eye-Controlled Media Player")
-        self.root.geometry("700x600")
+        self.root.geometry("520x520")
         self.root.resizable(True, True)
         
         # Initialize components
@@ -62,23 +62,23 @@ class EyeRemoteApp:
         main_container.grid_columnconfigure(0, weight=1)
         
         # Title
-        title_label = ctk.CTkLabel(main_container, text="EyeRemote", 
-                                  font=ctk.CTkFont(size=28, weight="bold"))
-        title_label.grid(row=0, column=0, pady=(20, 30))
+        title_label = ctk.CTkLabel(main_container, text="EyeRemote",
+                                  font=ctk.CTkFont(size=24, weight="bold"))
+        title_label.grid(row=0, column=0, pady=(15, 15))
         
         # Prominent Eye Detection Status Card
-        self.status_card = ctk.CTkFrame(main_container, corner_radius=15, height=120)
-        self.status_card.grid(row=1, column=0, sticky="ew", pady=(0, 20), padx=20)
+        self.status_card = ctk.CTkFrame(main_container, corner_radius=15, height=100)
+        self.status_card.grid(row=1, column=0, sticky="ew", pady=(0, 15), padx=15)
         self.status_card.grid_columnconfigure(1, weight=1)
         self.status_card.grid_propagate(False)
         
         # Status icon and text
-        self.status_icon = ctk.CTkLabel(self.status_card, text="👁️", font=ctk.CTkFont(size=36))
-        self.status_icon.grid(row=0, column=0, padx=(30, 20), pady=20, sticky="w")
+        self.status_icon = ctk.CTkLabel(self.status_card, text="👁️", font=ctk.CTkFont(size=32))
+        self.status_icon.grid(row=0, column=0, padx=(20, 10), pady=15, sticky="w")
         
         self.eye_status_label = ctk.CTkLabel(self.status_card, text="NO EYES DETECTED", 
-                                           font=ctk.CTkFont(size=24, weight="bold"))
-        self.eye_status_label.grid(row=0, column=1, padx=(0, 30), pady=20, sticky="ew")
+                                           font=ctk.CTkFont(size=20, weight="bold"))
+        self.eye_status_label.grid(row=0, column=1, padx=(0, 20), pady=15, sticky="ew")
         
         # Initialize status card as not detected (red theme)
         self.update_status_card(False)
@@ -86,49 +86,49 @@ class EyeRemoteApp:
         # Detection status label
         self.status_var = ctk.StringVar(value="Stopped")
         self.status_label = ctk.CTkLabel(main_container, textvariable=self.status_var, 
-                                        font=ctk.CTkFont(size=14))
-        self.status_label.grid(row=2, column=0, pady=(0, 20))
+                                        font=ctk.CTkFont(size=13))
+        self.status_label.grid(row=2, column=0, pady=(0, 15))
         
         # Configuration frame
         config_frame = ctk.CTkFrame(main_container, corner_radius=10)
-        config_frame.grid(row=3, column=0, sticky="ew", pady=(0, 20), padx=20)
+        config_frame.grid(row=3, column=0, sticky="ew", pady=(0, 20), padx=15)
         config_frame.grid_columnconfigure(1, weight=1)
         
         # Configuration title
         config_title = ctk.CTkLabel(config_frame, text="Configuration", 
                                    font=ctk.CTkFont(size=18, weight="bold"))
-        config_title.grid(row=0, column=0, columnspan=2, pady=(20, 15), padx=20)
+        config_title.grid(row=0, column=0, columnspan=2, pady=(15, 10), padx=15)
         
         # Timeout setting
         timeout_label = ctk.CTkLabel(config_frame, text="Attention Timeout (seconds):", 
                                     font=ctk.CTkFont(size=14))
-        timeout_label.grid(row=1, column=0, sticky="w", pady=5, padx=(20, 10))
+        timeout_label.grid(row=1, column=0, sticky="w", pady=3, padx=(15, 10))
         
         self.timeout_var = ctk.StringVar(value="3")
-        timeout_entry = ctk.CTkEntry(config_frame, textvariable=self.timeout_var, width=100, height=35)
-        timeout_entry.grid(row=1, column=1, sticky="w", pady=5, padx=(0, 20))
+        timeout_entry = ctk.CTkEntry(config_frame, textvariable=self.timeout_var, width=100, height=32)
+        timeout_entry.grid(row=1, column=1, sticky="w", pady=3, padx=(0, 15))
         
         # Max faces setting
         faces_label = ctk.CTkLabel(config_frame, text="Max Faces to Monitor:", 
                                   font=ctk.CTkFont(size=14))
-        faces_label.grid(row=2, column=0, sticky="w", pady=5, padx=(20, 10))
+        faces_label.grid(row=2, column=0, sticky="w", pady=3, padx=(15, 10))
         
         self.max_faces_var = ctk.StringVar(value="1")
-        faces_entry = ctk.CTkEntry(config_frame, textvariable=self.max_faces_var, width=100, height=35)
-        faces_entry.grid(row=2, column=1, sticky="w", pady=5, padx=(0, 20))
+        faces_entry = ctk.CTkEntry(config_frame, textvariable=self.max_faces_var, width=100, height=32)
+        faces_entry.grid(row=2, column=1, sticky="w", pady=3, padx=(0, 15))
         
         # Target application
         app_label = ctk.CTkLabel(config_frame, text="Target Application:", 
                                 font=ctk.CTkFont(size=14))
-        app_label.grid(row=3, column=0, sticky="w", pady=5, padx=(20, 10))
+        app_label.grid(row=3, column=0, sticky="w", pady=3, padx=(15, 10))
         
         self.target_app_var = ctk.StringVar(value="Any")
         target_combo = ctk.CTkComboBox(config_frame, values=["Any", "VLC", "Chrome", "Firefox", "Edge", "Netflix"],
-                                      variable=self.target_app_var, width=150, height=35)
-        target_combo.grid(row=3, column=1, sticky="w", pady=5, padx=(0, 20))
+                                      variable=self.target_app_var, width=150, height=32)
+        target_combo.grid(row=3, column=1, sticky="w", pady=3, padx=(0, 15))
         
         # Bottom padding for config frame
-        ctk.CTkLabel(config_frame, text="").grid(row=4, column=0, pady=(0, 20))
+        ctk.CTkLabel(config_frame, text="").grid(row=4, column=0, pady=(0, 10))
         
         # Control buttons frame
         button_frame = ctk.CTkFrame(main_container, fg_color="transparent")
@@ -136,22 +136,22 @@ class EyeRemoteApp:
         
         self.start_button = ctk.CTkButton(button_frame, text="Start Detection", 
                                          command=self.start_detection, height=40, width=150,
-                                         font=ctk.CTkFont(size=14, weight="bold"))
-        self.start_button.grid(row=0, column=0, padx=10)
+                                         font=ctk.CTkFont(size=13, weight="bold"))
+        self.start_button.grid(row=0, column=0, padx=5)
         
         self.stop_button = ctk.CTkButton(button_frame, text="Stop Detection", 
                                         command=self.stop_detection, state="disabled", height=40, width=150,
-                                        font=ctk.CTkFont(size=14, weight="bold"))
-        self.stop_button.grid(row=0, column=1, padx=10)
+                                        font=ctk.CTkFont(size=13, weight="bold"))
+        self.stop_button.grid(row=0, column=1, padx=5)
         
         self.test_button = ctk.CTkButton(button_frame, text="Test Media Key", 
                                         command=self.test_media_key, height=40, width=150,
-                                        font=ctk.CTkFont(size=14))
-        self.test_button.grid(row=0, column=2, padx=10)
+                                        font=ctk.CTkFont(size=13))
+        self.test_button.grid(row=0, column=2, padx=5)
         
         # Activity log frame
-        log_frame = ctk.CTkFrame(main_container, corner_radius=10)
-        log_frame.grid(row=5, column=0, sticky="nsew", pady=(0, 20), padx=20)
+        log_frame = ctk.CTkFrame(main_container, corner_radius=10, fg_color="transparent")
+        log_frame.grid(row=5, column=0, sticky="nsew", pady=(0, 20), padx=15)
         log_frame.grid_columnconfigure(0, weight=1)
         log_frame.grid_rowconfigure(1, weight=1)
         main_container.grid_rowconfigure(5, weight=1)
@@ -159,11 +159,11 @@ class EyeRemoteApp:
         # Log title
         log_title = ctk.CTkLabel(log_frame, text="Activity Log", 
                                 font=ctk.CTkFont(size=16, weight="bold"))
-        log_title.grid(row=0, column=0, pady=(15, 10), padx=20)
+        log_title.grid(row=0, column=0, pady=(0, 5), padx=0)
         
         # Log textbox
-        self.log_text = ctk.CTkTextbox(log_frame, height=120, font=ctk.CTkFont(family="Consolas", size=12))
-        self.log_text.grid(row=1, column=0, sticky="nsew", padx=20, pady=(0, 15))
+        self.log_text = ctk.CTkTextbox(log_frame, height=100, font=ctk.CTkFont(family="Consolas", size=11))
+        self.log_text.grid(row=1, column=0, sticky="nsew", padx=0, pady=(0, 0))
         
         # About label
         about_label = ctk.CTkLabel(main_container, 
