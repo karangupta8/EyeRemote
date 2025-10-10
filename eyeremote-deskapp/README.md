@@ -11,6 +11,8 @@ EyeRemote is a privacy-focused desktop application that uses your webcam to dete
 - **Multi-Face Support**: Monitor multiple people watching together
 - **Low Latency**: Real-time detection with minimal system impact
 
+![AppScreen](docs/AppScreen.png)
+
 ## Requirements
 
 - Windows 10/11, macOS 10.14+, or Linux
