@@ -69,12 +69,14 @@ class EyeDetector:
             True if eyes are detected, False otherwise
         """
         if not self.is_initialized or not self.cap or not self.face_cascade or not self.eye_cascade:
+            print("Eye detector not properly initialized")
             return False
             
         try:
             # Capture frame
             ret, frame = self.cap.read()
             if not ret:
+                print("Failed to read frame from camera")
                 return False
                 
             # Convert to grayscale for detection
@@ -116,6 +118,23 @@ class EyeDetector:
             
         except Exception as e:
             print(f"Eye detection error: {e}")
+            return False
+    
+    def is_camera_working(self) -> bool:
+        """
+        Check if the camera is still working properly
+        
+        Returns:
+            True if camera is working, False otherwise
+        """
+        if not self.cap:
+            return False
+            
+        try:
+            # Try to read a frame
+            ret, frame = self.cap.read()
+            return ret and frame is not None
+        except Exception:
             return False
             
     def detect_eyes_with_details(self, max_faces: int = 1) -> Tuple[bool, List[Tuple[int, int, int, int]]]:

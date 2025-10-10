@@ -240,6 +240,7 @@ class EyeRemoteApp:
             # Once initialized, update state and start the main loop
             self.last_eye_seen = datetime.now()
             self.root.after(0, self.log_message, "Eye detection started")
+            self.root.after(0, lambda: self.status_var.set("Detecting"))
             self.detection_loop()
 
         except Exception as e:
@@ -287,6 +288,12 @@ class EyeRemoteApp:
         while self.is_detecting:
             try:
                 if not self.eye_detector:
+                    self.log_message("Eye detector not available, stopping detection")
+                    break
+                
+                # Check if camera is still working
+                if not self.eye_detector.is_camera_working():
+                    self.log_message("Camera not working properly, stopping detection")
                     break
                     
                 # Detect eyes
@@ -328,13 +335,36 @@ class EyeRemoteApp:
                             self.log_message(f"Media paused - eyes not detected for {timeout_seconds}s")
                 
                 # Update status
-                self.status_var.set("Detecting")
+                self.root.after(0, lambda: self.status_var.set("Detecting"))
                 
                 time.sleep(0.1)  # Small delay to prevent excessive CPU usage
                 
             except Exception as e:
                 self.log_message(f"Detection error: {str(e)}")
                 time.sleep(1)
+        
+        # Clean up when detection loop exits
+        self._handle_detection_loop_exit()
+    
+    def _handle_detection_loop_exit(self):
+        """Handle cleanup when the detection loop exits"""
+        # Update UI state on the main thread
+        def update_ui():
+            if self.is_detecting:  # Only update if we're still supposed to be detecting
+                self.is_detecting = False
+                self.start_button.configure(state="normal")
+                self.stop_button.configure(state="disabled")
+                self.status_var.set("Stopped")
+                
+                # Reset detection state
+                self.eyes_detected_stable_state = False
+                self.eyes_present_counter = 0
+                self.no_eyes_counter = 0
+                
+                self.update_status_card(False)
+                self.log_message("Eye detection stopped")
+        
+        self.root.after(0, update_ui)
                 
     def _execute_send_media_key(self, is_test=False):
         """Finds the target app, focuses it, and sends a media play/pause keypress."""
