@@ -4,6 +4,7 @@ import { Navbar } from "@/components/Navbar";
 import { URLInput } from "@/components/URLInput";
 import { VideoPlayer, VideoPlayerRef } from "@/components/VideoPlayer";
 import { GazeDetector } from "@/components/GazeDetector";
+import { StatusIndicator } from "@/components/StatusIndicator";
 
 const Index = () => {
   const [videoUrl, setVideoUrl] = useState("");
@@ -98,8 +99,17 @@ const Index = () => {
                 initial={{ opacity: 0, y: 20 }}
                 animate={{ opacity: 1, y: 0 }}
                 transition={{ delay: 0.3 }}
-                className="w-full"
+                className="w-full space-y-4"
               >
+                {detectionEnabled && (
+                  <div className="flex justify-center">
+                    <StatusIndicator 
+                      isWatching={isWatching} 
+                      isDetectionEnabled={detectionEnabled} 
+                      error={detectionError}
+                    />
+                  </div>
+                )}
                 <URLInput onVideoLoad={setVideoUrl} />
               </motion.div>
             </motion.div>
