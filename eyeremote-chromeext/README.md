@@ -32,6 +32,7 @@ eyeremote-chromeext/
 ├── content.js                     # Content script for YouTube integration
 ├── gazeDetector.js               # Gaze detection module
 ├── download_mediapipe.ps1        # Script to download MediaPipe assets
+├── build.ps1                     # Script to automatically package the extension
 └── README.md                     # This file
 ```
 
