@@ -38,6 +38,7 @@
       "resources": [
         "lib/wasm/*",
         "lib/*.task",
+        "lib/tasks-vision.js",
         "gazeDetector.js"
       ],
       "matches": ["*://*.youtube.com/*"]

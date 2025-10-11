@@ -53,7 +53,7 @@ class GazeDetector {
     try {
       // Load MediaPipe from bundled files
       const script = document.createElement('script');
-      script.src = chrome.runtime.getURL('lib/vision_tasks.js');
+      script.src = chrome.runtime.getURL('lib/tasks-vision.js');
       document.head.appendChild(script);
 
       await new Promise((resolve, reject) => {

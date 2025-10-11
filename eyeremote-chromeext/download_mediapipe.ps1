@@ -9,9 +9,9 @@ if (!(Test-Path "lib\wasm")) {
 }
 
 # Download MediaPipe Vision Tasks JS file
-$visionTasksUrl = "https://cdn.jsdelivr.net/npm/@mediapipe/tasks-vision@latest/vision_tasks.js"
-Write-Host "Downloading vision_tasks.js..."
-Invoke-WebRequest -Uri $visionTasksUrl -OutFile "lib\vision_tasks.js"
+$visionTasksUrl = "https://cdn.jsdelivr.net/npm/@mediapipe/tasks-vision@latest/dist/tasks-vision.js"
+Write-Host "Downloading tasks-vision.js..."
+Invoke-WebRequest -Uri $visionTasksUrl -OutFile "lib\tasks-vision.js"
 
 # Download WASM files
 $wasmInternalUrl = "https://cdn.jsdelivr.net/npm/@mediapipe/tasks-vision@latest/wasm/vision_wasm_internal.js"
@@ -29,7 +29,7 @@ Invoke-WebRequest -Uri $modelUrl -OutFile "lib\face_landmarker.task"
 
 Write-Host "MediaPipe assets downloaded successfully!"
 Write-Host "Files downloaded:"
-Write-Host "- lib\vision_tasks.js"
+Write-Host "- lib\tasks-vision.js"
 Write-Host "- lib\wasm\vision_wasm_internal.js"
 Write-Host "- lib\wasm\vision_wasm_internal.wasm"
 Write-Host "- lib\face_landmarker.task"
