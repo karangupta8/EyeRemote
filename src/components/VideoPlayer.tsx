@@ -86,7 +86,7 @@ export const VideoPlayer = forwardRef<VideoPlayerRef, VideoPlayerProps>(
         className="relative w-full max-w-5xl mx-auto"
       >
         <div className="absolute -top-16 left-1/2 -translate-x-1/2 z-10">
-          <StatusIndicator isWatching={isWatching} isDetectionEnabled={isDetectionEnabled} isInitialized={true} error={error} />
+          <StatusIndicator isWatching={isWatching} isDetectionEnabled={isDetectionEnabled} isInitialized={true} error={error} hasVideo={true} />
         </div>
         
         <div className="relative aspect-video rounded-xl overflow-hidden bg-card border border-border shadow-glow">

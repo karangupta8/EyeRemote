@@ -6,9 +6,10 @@ interface StatusIndicatorProps {
   isDetectionEnabled: boolean;
   isInitialized: boolean;
   error?: string | null;
+  hasVideo?: boolean;
 }
 
-export function StatusIndicator({ isWatching, isDetectionEnabled, isInitialized, error }: StatusIndicatorProps) {
+export function StatusIndicator({ isWatching, isDetectionEnabled, isInitialized, error, hasVideo = false }: StatusIndicatorProps) {
   // Show error states first (highest priority)
   if (error === "permission-denied") {
     return (
@@ -59,7 +60,17 @@ export function StatusIndicator({ isWatching, isDetectionEnabled, isInitialized,
     );
   }
 
-  // Show initializing state (detection enabled but not initialized yet)
+  // Show waiting state when no video is loaded
+  if (!hasVideo) {
+    return (
+      <div className="flex items-center gap-2 px-4 py-2 rounded-full bg-muted/50 border border-border">
+        <Camera className="w-4 h-4 text-muted-foreground" />
+        <span className="text-sm text-muted-foreground">Waiting for Video</span>
+      </div>
+    );
+  }
+
+  // Show initializing state (detection enabled, video loaded, but camera not initialized yet)
   if (!isInitialized) {
     return (
       <motion.div

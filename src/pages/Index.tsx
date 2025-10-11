@@ -109,6 +109,7 @@ const Index = () => {
                       isDetectionEnabled={detectionEnabled}
                       isInitialized={isDetectionInitialized}
                       error={detectionError}
+                      hasVideo={false}
                     />
                   </div>
                 )}
