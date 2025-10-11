@@ -66,7 +66,7 @@ const Index = () => {
       {/* Background gradient effect */}
       <div className="fixed inset-0 bg-gradient-glow pointer-events-none" />
       
-      <main className="relative pt-24 pb-12 px-4">
+      <main className="relative pt-24 pb-12 px-4 md:pt-36">
         <div className="container mx-auto">
           {!videoUrl ? (
             <motion.div
