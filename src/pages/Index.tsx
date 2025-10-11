@@ -8,11 +8,12 @@ import { StatusIndicator } from "@/components/StatusIndicator";
 
 const Index = () => {
   const [videoUrl, setVideoUrl] = useState("");
-  const [isWatching, setIsWatching] = useState(true);
+  const [isWatching, setIsWatching] = useState(false);
   const [pauseDelay, setPauseDelay] = useState(2);
   const [detectionEnabled, setDetectionEnabled] = useState(true);
   const [previewEnabled, setPreviewEnabled] = useState(false);
   const [detectionError, setDetectionError] = useState<string | null>(null);
+  const [isDetectionInitialized, setIsDetectionInitialized] = useState(false);
   
   const playerRef = useRef<VideoPlayerRef>(null);
   const awayTimerRef = useRef<NodeJS.Timeout>();
@@ -105,7 +106,8 @@ const Index = () => {
                   <div className="flex justify-center">
                     <StatusIndicator 
                       isWatching={isWatching} 
-                      isDetectionEnabled={detectionEnabled} 
+                      isDetectionEnabled={detectionEnabled}
+                      isInitialized={isDetectionInitialized}
                       error={detectionError}
                     />
                   </div>
@@ -139,6 +141,7 @@ const Index = () => {
       <GazeDetector
         onGazeChange={handleGazeChange}
         onError={setDetectionError}
+        onInitialized={setIsDetectionInitialized}
         isEnabled={detectionEnabled && !!videoUrl}
         showPreview={previewEnabled}
       />

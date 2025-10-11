@@ -5,11 +5,12 @@ import { toast } from "sonner";
 interface GazeDetectorProps {
   onGazeChange: (isWatching: boolean) => void;
   onError: (error: string | null) => void;
+  onInitialized: (initialized: boolean) => void;
   isEnabled: boolean;
   showPreview?: boolean;
 }
 
-export function GazeDetector({ onGazeChange, onError, isEnabled, showPreview = false }: GazeDetectorProps) {
+export function GazeDetector({ onGazeChange, onError, onInitialized, isEnabled, showPreview = false }: GazeDetectorProps) {
   const videoRef = useRef<HTMLVideoElement>(null);
   const canvasRef = useRef<HTMLCanvasElement>(null);
   const faceLandmarkerRef = useRef<FaceLandmarker | null>(null);
@@ -57,6 +58,7 @@ export function GazeDetector({ onGazeChange, onError, isEnabled, showPreview = f
           videoRef.current.addEventListener('loadeddata', predictWebcam);
         }
         onError(null);
+        onInitialized(true);
       } catch (error: any) {
         console.error("Failed to access webcam:", error);
         if (error.name === 'NotAllowedError' || error.name === 'PermissionDeniedError') {
@@ -130,16 +132,17 @@ export function GazeDetector({ onGazeChange, onError, isEnabled, showPreview = f
       if (stream) {
         stream.getTracks().forEach(track => track.stop());
       }
+      onInitialized(false);
     };
-  }, [isEnabled, onGazeChange, onError, showPreview]);
+  }, [isEnabled, onGazeChange, onError, onInitialized, showPreview]);
 
   if (!isEnabled || !showPreview) {
     return null;
   }
 
   return (
-    <div className="fixed bottom-4 right-4 z-50">
-      <div className="relative w-48 h-36 rounded-lg overflow-hidden border-2 border-primary shadow-glow">
+    <div className="fixed top-20 left-4 z-50">
+      <div className="relative w-40 h-30 rounded-lg overflow-hidden border-2 border-primary shadow-glow opacity-70 hover:opacity-100 transition-opacity">
         <video
           ref={videoRef}
           autoPlay

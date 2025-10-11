@@ -1,14 +1,15 @@
 import { motion } from "framer-motion";
-import { Eye, EyeOff, AlertCircle, Camera, CameraOff } from "lucide-react";
+import { Eye, EyeOff, AlertCircle, Camera, CameraOff, Loader2 } from "lucide-react";
 
 interface StatusIndicatorProps {
   isWatching: boolean;
   isDetectionEnabled: boolean;
+  isInitialized: boolean;
   error?: string | null;
 }
 
-export function StatusIndicator({ isWatching, isDetectionEnabled, error }: StatusIndicatorProps) {
-  // Show error states
+export function StatusIndicator({ isWatching, isDetectionEnabled, isInitialized, error }: StatusIndicatorProps) {
+  // Show error states first (highest priority)
   if (error === "permission-denied") {
     return (
       <motion.div
@@ -48,12 +49,27 @@ export function StatusIndicator({ isWatching, isDetectionEnabled, error }: Statu
     );
   }
 
+  // Show detection disabled state
   if (!isDetectionEnabled) {
     return (
       <div className="flex items-center gap-2 px-4 py-2 rounded-full bg-muted/50 border border-border">
         <EyeOff className="w-4 h-4 text-muted-foreground" />
         <span className="text-sm text-muted-foreground">Detection Off</span>
       </div>
+    );
+  }
+
+  // Show initializing state (detection enabled but not initialized yet)
+  if (!isInitialized) {
+    return (
+      <motion.div
+        initial={{ scale: 0.9, opacity: 0 }}
+        animate={{ scale: 1, opacity: 1 }}
+        className="flex items-center gap-2 px-4 py-2 rounded-full bg-muted/50 border border-border"
+      >
+        <Loader2 className="w-4 h-4 text-muted-foreground animate-spin" />
+        <span className="text-sm text-muted-foreground">Initializing Camera...</span>
+      </motion.div>
     );
   }
 
