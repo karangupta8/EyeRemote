@@ -10,6 +10,7 @@ interface NavbarProps {
   onDetectionToggle: (enabled: boolean) => void;
   previewEnabled: boolean;
   onPreviewToggle: (enabled: boolean) => void;
+  onLogoClick: () => void;
 }
 
 export function Navbar({
@@ -19,21 +20,24 @@ export function Navbar({
   onDetectionToggle,
   previewEnabled,
   onPreviewToggle,
+  onLogoClick,
 }: NavbarProps) {
   return (
     <nav className="fixed top-0 left-0 right-0 z-50 border-b border-border bg-background/80 backdrop-blur-xl">
       <div className="container mx-auto px-4 py-3">
         <div className="flex items-center justify-between gap-6">
           {/* Logo */}
-          <div className="flex items-center gap-3 flex-shrink-0">
-            <div className="flex items-center justify-center w-10 h-10 rounded-lg bg-primary/10">
-              <Eye className="w-6 h-6 text-primary" />
+          <button onClick={onLogoClick} className="flex items-center gap-3 flex-shrink-0 group">
+            <div className="flex items-center justify-center w-10 h-10 rounded-lg bg-primary/10 group-hover:bg-primary/20 transition-colors">
+              <Eye className="w-6 h-6 text-primary group-hover:scale-110 transition-transform" />
             </div>
             <div>
-              <h1 className="text-xl font-bold text-foreground">EyeRemote</h1>
-              <p className="text-xs text-muted-foreground">Your eyes are the play button</p>
+              <h1 className="text-xl font-bold text-foreground text-left">EyeRemote</h1>
+              <p className="text-xs text-muted-foreground text-left">
+                Your eyes are the play button
+              </p>
             </div>
-          </div>
+          </button>
           
           {/* Settings Controls */}
           <div className="flex items-center gap-6 flex-wrap">

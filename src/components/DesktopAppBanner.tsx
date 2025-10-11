@@ -21,7 +21,7 @@ export function DesktopAppBanner() {
           
           <div className="flex-1 text-center md:text-left space-y-3">
             <h3 className="text-xl md:text-2xl font-bold text-foreground">
-              Want This for <span className="text-transparent bg-clip-text bg-gradient-primary">Any Player?</span>
+              Want This Locally for <span className="text-transparent bg-clip-text bg-gradient-primary">Any Player?</span>
             </h3>
             <p className="text-sm md:text-base text-muted-foreground">
               Download our desktop app to control YouTube, Netflix, VLC, and any media player with your eyes. 
@@ -52,7 +52,7 @@ export function DesktopAppBanner() {
               className="inline-flex items-center gap-2 px-6 py-3 rounded-lg bg-primary text-primary-foreground font-medium hover:opacity-90 transition-all hover:scale-105 shadow-lg"
             >
               <Download className="w-4 h-4" />
-              Download Desktop App
+              Run as Desktop App
             </a>
           </div>
         </div>

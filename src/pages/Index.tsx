@@ -52,6 +52,10 @@ const Index = () => {
     };
   }, []);
 
+  const handleLogoClick = () => {
+    setVideoUrl("");
+  };
+
   return (
     <div className="min-h-screen bg-background">
       <Navbar
@@ -61,6 +65,7 @@ const Index = () => {
         onDetectionToggle={setDetectionEnabled}
         previewEnabled={previewEnabled}
         onPreviewToggle={setPreviewEnabled}
+        onLogoClick={handleLogoClick}
       />
       
       {/* Background gradient effect */}
