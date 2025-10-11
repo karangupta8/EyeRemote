@@ -128,6 +128,14 @@ const Index = () => {
                 isDetectionEnabled={detectionEnabled}
                 error={detectionError}
               />
+
+              <GazeDetector
+                onGazeChange={handleGazeChange}
+                onError={setDetectionError}
+                onInitialized={setIsDetectionInitialized}
+                isEnabled={detectionEnabled && !!videoUrl}
+                showPreview={previewEnabled}
+              />
               
               <div className="flex justify-center">
                 <button
@@ -142,13 +150,15 @@ const Index = () => {
         </div>
       </main>
 
-      <GazeDetector
-        onGazeChange={handleGazeChange}
-        onError={setDetectionError}
-        onInitialized={setIsDetectionInitialized}
-        isEnabled={detectionEnabled && !!videoUrl}
-        showPreview={previewEnabled}
-      />
+      {/* GazeDetector for when no video is loaded, to initialize the model */}
+      {!videoUrl && (
+        <GazeDetector
+          onGazeChange={handleGazeChange}
+          onError={setDetectionError}
+          onInitialized={setIsDetectionInitialized}
+          isEnabled={detectionEnabled}
+        />
+      )}
     </div>
   );
 };

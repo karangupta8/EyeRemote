@@ -141,8 +141,8 @@ export function GazeDetector({ onGazeChange, onError, onInitialized, isEnabled, 
   }
 
   return (
-    <div className="fixed top-20 left-4 z-50">
-      <div className="relative w-40 h-30 rounded-lg overflow-hidden border-2 border-primary shadow-glow opacity-70 hover:opacity-100 transition-opacity">
+    <div className="flex justify-center">
+      <div className="relative w-48 h-36 rounded-lg overflow-hidden border-2 border-primary shadow-glow opacity-80 hover:opacity-100 transition-opacity">
         <video
           ref={videoRef}
           autoPlay
