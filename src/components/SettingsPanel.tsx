@@ -75,7 +75,12 @@ export function SettingsPanel({
               <Switch
                 id="detection-toggle"
                 checked={detectionEnabled}
-                onCheckedChange={onDetectionToggle}
+                onCheckedChange={(checked) => {
+                  onDetectionToggle(checked);
+                  if (!checked) {
+                    onPreviewToggle(false); // Also turn off preview
+                  }
+                }}
               />
             </div>
           </div>

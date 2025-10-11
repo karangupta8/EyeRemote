@@ -126,7 +126,8 @@ export function GazeDetector({ onGazeChange, onError, onInitialized, isEnabled, 
       animationFrameRef.current = requestAnimationFrame(predictWebcam);
     };
 
-    if (isEnabled || showPreview) {
+    // Only start webcam if detection is enabled. Preview is an add-on.
+    if (isEnabled) {
       initializeFaceLandmarker();
       startWebcam();
     }
@@ -140,9 +141,10 @@ export function GazeDetector({ onGazeChange, onError, onInitialized, isEnabled, 
       }
       onInitialized(false);
     };
-  }, [isEnabled, onGazeChange, onError, onInitialized, showPreview]);
+    // showPreview is removed from dependencies as it's now controlled by isEnabled
+  }, [isEnabled, onGazeChange, onError, onInitialized]);
 
-  if (!isEnabled || !showPreview) {
+  if (!isEnabled || !showPreview) { // Keep this check to hide the component when not needed
     return null;
   }
 
