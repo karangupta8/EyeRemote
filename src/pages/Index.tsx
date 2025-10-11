@@ -5,6 +5,7 @@ import { URLInput } from "@/components/URLInput";
 import { VideoPlayer, VideoPlayerRef } from "@/components/VideoPlayer";
 import { GazeDetector } from "@/components/GazeDetector";
 import { StatusIndicator } from "@/components/StatusIndicator";
+import { DesktopAppBanner } from "@/components/DesktopAppBanner";
 
 const Index = () => {
   const [videoUrl, setVideoUrl] = useState("");
@@ -115,6 +116,8 @@ const Index = () => {
                 )}
                 <URLInput onVideoLoad={setVideoUrl} />
               </motion.div>
+              
+              <DesktopAppBanner />
             </motion.div>
           ) : (
             <div className="space-y-8">
