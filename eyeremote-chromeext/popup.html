@@ -4,27 +4,297 @@
     <meta charset="UTF-8">
     <title>EyeRemote</title>
     <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
         body {
             font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
-            width: 250px;
-            padding: 10px;
+            width: 320px;
+            min-height: 400px;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+        }
+
+        .container {
+            padding: 20px;
+            display: flex;
+            flex-direction: column;
+            gap: 20px;
+        }
+
+        .header {
+            text-align: center;
+            margin-bottom: 10px;
+        }
+
+        .logo {
+            font-size: 24px;
+            font-weight: bold;
+            margin-bottom: 5px;
+        }
+
+        .subtitle {
+            font-size: 12px;
+            opacity: 0.8;
+        }
+
+        .status-card {
+            background: rgba(255, 255, 255, 0.1);
+            backdrop-filter: blur(10px);
+            border-radius: 12px;
+            padding: 16px;
+            border: 1px solid rgba(255, 255, 255, 0.2);
+        }
+
+        .status-item {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 8px;
+        }
+
+        .status-item:last-child {
+            margin-bottom: 0;
+        }
+
+        .status-label {
+            font-size: 13px;
+            opacity: 0.9;
+        }
+
+        .status-value {
+            font-size: 13px;
+            font-weight: 500;
+        }
+
+        .status-indicator {
+            width: 8px;
+            height: 8px;
+            border-radius: 50%;
+            margin-left: 8px;
+        }
+
+        .status-indicator.online {
+            background: #10B981;
+            box-shadow: 0 0 8px rgba(16, 185, 129, 0.5);
+        }
+
+        .status-indicator.offline {
+            background: #EF4444;
+            box-shadow: 0 0 8px rgba(239, 68, 68, 0.5);
+        }
+
+        .control-section {
+            background: rgba(255, 255, 255, 0.1);
+            backdrop-filter: blur(10px);
+            border-radius: 12px;
+            padding: 16px;
+            border: 1px solid rgba(255, 255, 255, 0.2);
+        }
+
+        .section-title {
+            font-size: 16px;
+            font-weight: 600;
+            margin-bottom: 16px;
             text-align: center;
         }
-        h1 {
-            font-size: 18px;
-            margin-top: 0;
+
+        .toggle-container {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            margin-bottom: 16px;
         }
-        button {
-            width: 100%;
-            padding: 10px;
+
+        .toggle-label {
             font-size: 14px;
+            font-weight: 500;
+        }
+
+        .toggle-switch {
+            position: relative;
+            width: 50px;
+            height: 24px;
+            background: rgba(255, 255, 255, 0.3);
+            border-radius: 12px;
             cursor: pointer;
+            transition: background 0.3s;
+        }
+
+        .toggle-switch.active {
+            background: #10B981;
+        }
+
+        .toggle-slider {
+            position: absolute;
+            top: 2px;
+            left: 2px;
+            width: 20px;
+            height: 20px;
+            background: white;
+            border-radius: 50%;
+            transition: transform 0.3s;
+        }
+
+        .toggle-switch.active .toggle-slider {
+            transform: translateX(26px);
+        }
+
+        .slider-container {
+            margin-bottom: 16px;
+        }
+
+        .slider-label {
+            display: flex;
+            justify-content: space-between;
+            margin-bottom: 8px;
+            font-size: 14px;
+        }
+
+        .slider {
+            width: 100%;
+            height: 6px;
+            border-radius: 3px;
+            background: rgba(255, 255, 255, 0.3);
+            outline: none;
+            cursor: pointer;
+        }
+
+        .slider::-webkit-slider-thumb {
+            appearance: none;
+            width: 18px;
+            height: 18px;
+            border-radius: 50%;
+            background: white;
+            cursor: pointer;
+            box-shadow: 0 2px 6px rgba(0, 0, 0, 0.2);
+        }
+
+        .slider::-moz-range-thumb {
+            width: 18px;
+            height: 18px;
+            border-radius: 50%;
+            background: white;
+            cursor: pointer;
+            border: none;
+            box-shadow: 0 2px 6px rgba(0, 0, 0, 0.2);
+        }
+
+        .button {
+            width: 100%;
+            padding: 12px;
+            border: none;
+            border-radius: 8px;
+            font-size: 14px;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.3s;
+            background: rgba(255, 255, 255, 0.2);
+            color: white;
+            border: 1px solid rgba(255, 255, 255, 0.3);
+        }
+
+        .button:hover {
+            background: rgba(255, 255, 255, 0.3);
+            transform: translateY(-1px);
+        }
+
+        .button:active {
+            transform: translateY(0);
+        }
+
+        .error-message {
+            background: rgba(239, 68, 68, 0.2);
+            border: 1px solid rgba(239, 68, 68, 0.5);
+            border-radius: 8px;
+            padding: 12px;
+            font-size: 13px;
+            text-align: center;
+            margin-top: 10px;
+        }
+
+        .loading {
+            opacity: 0.6;
+            pointer-events: none;
+        }
+
+        .fade-in {
+            animation: fadeIn 0.3s ease-in;
+        }
+
+        @keyframes fadeIn {
+            from { opacity: 0; transform: translateY(10px); }
+            to { opacity: 1; transform: translateY(0); }
         }
     </style>
 </head>
 <body>
-    <h1>EyeRemote</h1>
-    <button id="toggleBtn">Enable Gaze Detection</button>
+    <div class="container">
+        <div class="header fade-in">
+            <div class="logo">👁️ EyeRemote</div>
+            <div class="subtitle">Gaze-controlled media playback</div>
+        </div>
+
+        <div class="status-card fade-in">
+            <div class="status-item">
+                <span class="status-label">Detection</span>
+                <div style="display: flex; align-items: center;">
+                    <span class="status-value" id="detectionStatus">Offline</span>
+                    <div class="status-indicator offline" id="detectionIndicator"></div>
+                </div>
+            </div>
+            <div class="status-item">
+                <span class="status-label">Camera</span>
+                <div style="display: flex; align-items: center;">
+                    <span class="status-value" id="cameraStatus">Not Ready</span>
+                    <div class="status-indicator offline" id="cameraIndicator"></div>
+                </div>
+            </div>
+            <div class="status-item">
+                <span class="status-label">Video</span>
+                <div style="display: flex; align-items: center;">
+                    <span class="status-value" id="videoStatus">No Video</span>
+                    <div class="status-indicator offline" id="videoIndicator"></div>
+                </div>
+            </div>
+            <div class="status-item">
+                <span class="status-label">Gaze</span>
+                <div style="display: flex; align-items: center;">
+                    <span class="status-value" id="gazeStatus">Not Detected</span>
+                    <div class="status-indicator offline" id="gazeIndicator"></div>
+                </div>
+            </div>
+        </div>
+
+        <div class="control-section fade-in">
+            <div class="section-title">Controls</div>
+            
+            <div class="toggle-container">
+                <span class="toggle-label">Enable Detection</span>
+                <div class="toggle-switch" id="toggleSwitch">
+                    <div class="toggle-slider"></div>
+                </div>
+            </div>
+
+            <div class="slider-container">
+                <div class="slider-label">
+                    <span>Timeout</span>
+                    <span id="timeoutValue">3s</span>
+                </div>
+                <input type="range" min="1" max="10" value="3" class="slider" id="timeoutSlider">
+            </div>
+
+            <button class="button" id="refreshBtn">Refresh Status</button>
+        </div>
+
+        <div id="errorContainer" style="display: none;">
+            <div class="error-message" id="errorMessage"></div>
+        </div>
+    </div>
+
     <script src="popup.js"></script>
 </body>
 </html>
