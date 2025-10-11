@@ -46,7 +46,7 @@ export function DesktopAppBanner() {
           
           <div className="flex-shrink-0">
             <a
-              href="https://github.com/yourusername/eyeremote"
+              href="https://github.com/karangupta8/EyeRemote/tree/main/eyeremote-deskapp"
               target="_blank"
               rel="noopener noreferrer"
               className="inline-flex items-center gap-2 px-6 py-3 rounded-lg bg-primary text-primary-foreground font-medium hover:opacity-90 transition-all hover:scale-105 shadow-lg"
