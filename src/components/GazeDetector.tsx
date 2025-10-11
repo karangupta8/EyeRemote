@@ -75,8 +75,12 @@ export function GazeDetector({ onGazeChange, onError, onInitialized, isEnabled, 
     };
 
     const predictWebcam = () => {
-      if (!isEnabled || !faceLandmarkerRef.current || !videoRef.current) {
-        return;
+      if (!faceLandmarkerRef.current || !videoRef.current) return;
+
+      // If detection is off but preview is on, we still need to draw to the canvas.
+      // But we should stop the animation frame if neither is enabled.
+      if (!isEnabled && !showPreview) {
+        return; 
       }
 
       const video = videoRef.current;
@@ -108,19 +112,21 @@ export function GazeDetector({ onGazeChange, onError, onInitialized, isEnabled, 
         }
         
         // Detect if face is present and looking at screen
-        const isFaceDetected = results.faceLandmarks && results.faceLandmarks.length > 0;
-        
-        // Only trigger callback if state changed
-        if (lastDetectionStateRef.current !== isFaceDetected) {
-          lastDetectionStateRef.current = isFaceDetected;
-          onGazeChange(isFaceDetected);
+        if (isEnabled) {
+          const isFaceDetected = results.faceLandmarks && results.faceLandmarks.length > 0;
+          
+          // Only trigger callback if state changed
+          if (lastDetectionStateRef.current !== isFaceDetected) {
+            lastDetectionStateRef.current = isFaceDetected;
+            onGazeChange(isFaceDetected);
+          }
         }
       }
 
       animationFrameRef.current = requestAnimationFrame(predictWebcam);
     };
 
-    if (isEnabled) {
+    if (isEnabled || showPreview) {
       initializeFaceLandmarker();
       startWebcam();
     }
@@ -149,7 +155,6 @@ export function GazeDetector({ onGazeChange, onError, onInitialized, isEnabled, 
           playsInline
           muted
           className="absolute inset-0 w-full h-full object-cover"
-          style={{ display: 'none' }}
         />
         <canvas
           ref={canvasRef}

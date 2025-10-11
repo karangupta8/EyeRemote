@@ -162,6 +162,7 @@ const Index = () => {
           onError={setDetectionError}
           onInitialized={setIsDetectionInitialized}
           isEnabled={detectionEnabled}
+          showPreview={previewEnabled}
         />
       )}
     </div>
