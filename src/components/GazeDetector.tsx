@@ -16,7 +16,20 @@ export function GazeDetector({ onGazeChange, onError, onInitialized, isEnabled, 
   const faceLandmarkerRef = useRef<FaceLandmarker | null>(null);
   const animationFrameRef = useRef<number>();
   const [isInitialized, setIsInitialized] = useState(false);
-  const lastDetectionStateRef = useRef<boolean | null>(null);
+  
+  // State smoothing logic (matching desktop app implementation)
+  const [eyesPresentCounter, setEyesPresentCounter] = useState(0);
+  const [noEyesCounter, setNoEyesCounter] = useState(0);
+  const [eyesDetectedStableState, setEyesDetectedStableState] = useState(false);
+  const lastProcessTimeRef = useRef(0);
+  const frameCountRef = useRef(0);
+  const lastFpsTimeRef = useRef(performance.now());
+  const [fps, setFps] = useState(0);
+  
+  // Constants for state smoothing (matching desktop app)
+  const EYES_PRESENT_THRESHOLD = 2;  // Frames to confirm eyes are present
+  const NO_EYES_THRESHOLD = 3;       // Frames to confirm eyes are gone
+  const PROCESS_INTERVAL = 100;      // 100ms = ~10 FPS (matching desktop app's 0.1s delay)
 
   useEffect(() => {
     let stream: MediaStream | null = null;
@@ -30,7 +43,7 @@ export function GazeDetector({ onGazeChange, onError, onInitialized, isEnabled, 
         const faceLandmarker = await FaceLandmarker.createFromOptions(vision, {
           baseOptions: {
             modelAssetPath: "https://storage.googleapis.com/mediapipe-models/face_landmarker/face_landmarker/float16/1/face_landmarker.task",
-            delegate: "GPU"
+            delegate: "CPU" // Use CPU for better compatibility and stability
           },
           runningMode: "VIDEO",
           numFaces: 1
@@ -85,6 +98,22 @@ export function GazeDetector({ onGazeChange, onError, onInitialized, isEnabled, 
       const video = videoRef.current;
       const canvas = canvasRef.current;
       
+      // Frame rate control - only process every PROCESS_INTERVAL ms (matching desktop app)
+      const now = performance.now();
+      if (now - lastProcessTimeRef.current < PROCESS_INTERVAL) {
+        animationFrameRef.current = requestAnimationFrame(predictWebcam);
+        return;
+      }
+      lastProcessTimeRef.current = now;
+
+      // FPS calculation for debugging
+      frameCountRef.current++;
+      if (now - lastFpsTimeRef.current >= 1000) {
+        setFps(Math.round(frameCountRef.current * 1000 / (now - lastFpsTimeRef.current)));
+        frameCountRef.current = 0;
+        lastFpsTimeRef.current = now;
+      }
+      
       if (video.readyState === video.HAVE_ENOUGH_DATA) {
         const results = faceLandmarkerRef.current.detectForVideo(video, performance.now());
         
@@ -97,6 +126,8 @@ export function GazeDetector({ onGazeChange, onError, onInitialized, isEnabled, 
             
             if (results.faceLandmarks && results.faceLandmarks.length > 0) {
               const landmarks = results.faceLandmarks[0];
+              
+              // Draw all landmarks
               ctx.fillStyle = 'rgba(124, 58, 237, 0.5)';
               landmarks.forEach((landmark) => {
                 ctx.fillRect(
@@ -106,18 +137,59 @@ export function GazeDetector({ onGazeChange, onError, onInitialized, isEnabled, 
                   4
                 );
               });
+
+              // Highlight eye landmarks specifically
+              const leftEyeLandmarks = [33, 7, 163, 144, 145, 153, 154, 155, 133, 173, 157, 158, 159, 160, 161, 246];
+              const rightEyeLandmarks = [362, 382, 381, 380, 374, 373, 390, 249, 263, 466, 388, 387, 386, 385, 384, 398];
+              
+              ctx.fillStyle = 'rgba(34, 197, 94, 0.8)'; // Green for eye landmarks
+              [...leftEyeLandmarks, ...rightEyeLandmarks].forEach((index) => {
+                if (landmarks[index]) {
+                  ctx.fillRect(
+                    landmarks[index].x * canvas.width - 3,
+                    landmarks[index].y * canvas.height - 3,
+                    6,
+                    6
+                  );
+                }
+              });
             }
           }
         }
         
-        // Detect if face is present and looking at screen
+        // Enhanced eye detection with state smoothing (matching desktop app logic)
         if (isEnabled) {
-          const isFaceDetected = results.faceLandmarks && results.faceLandmarks.length > 0;
+          let isEyesDetected = false;
           
-          // Only trigger callback if state changed
-          if (lastDetectionStateRef.current !== isFaceDetected) {
-            lastDetectionStateRef.current = isFaceDetected;
-            onGazeChange(isFaceDetected);
+          if (results.faceLandmarks && results.faceLandmarks.length > 0) {
+            const landmarks = results.faceLandmarks[0];
+            
+            // Check for specific eye landmarks (MediaPipe provides 468 face landmarks)
+            const leftEyeLandmarks = [33, 7, 163, 144, 145, 153, 154, 155, 133, 173, 157, 158, 159, 160, 161, 246];
+            const rightEyeLandmarks = [362, 382, 381, 380, 374, 373, 390, 249, 263, 466, 388, 387, 386, 385, 384, 398];
+            
+            // Check if we have valid landmarks for both eyes
+            const hasLeftEye = leftEyeLandmarks.some(index => landmarks[index] && landmarks[index].x > 0 && landmarks[index].y > 0);
+            const hasRightEye = rightEyeLandmarks.some(index => landmarks[index] && landmarks[index].x > 0 && landmarks[index].y > 0);
+            
+            isEyesDetected = hasLeftEye && hasRightEye;
+          }
+          
+          // State smoothing logic (matching desktop app implementation)
+          if (isEyesDetected) {
+            setNoEyesCounter(0);
+            setEyesPresentCounter(prev => prev + 1);
+            if (eyesPresentCounter >= EYES_PRESENT_THRESHOLD && !eyesDetectedStableState) {
+              setEyesDetectedStableState(true);
+              onGazeChange(true);
+            }
+          } else {
+            setEyesPresentCounter(0);
+            setNoEyesCounter(prev => prev + 1);
+            if (noEyesCounter >= NO_EYES_THRESHOLD && eyesDetectedStableState) {
+              setEyesDetectedStableState(false);
+              onGazeChange(false);
+            }
           }
         }
       }
@@ -139,9 +211,15 @@ export function GazeDetector({ onGazeChange, onError, onInitialized, isEnabled, 
         stream.getTracks().forEach(track => track.stop());
       }
       onInitialized(false);
+      
+      // Reset state smoothing counters
+      setEyesPresentCounter(0);
+      setNoEyesCounter(0);
+      setEyesDetectedStableState(false);
+      setFps(0);
     };
     // showPreview is removed from dependencies as it's now controlled by isEnabled
-  }, [isEnabled, onGazeChange, onError, onInitialized]);
+  }, [isEnabled, onGazeChange, onError, onInitialized, eyesPresentCounter, noEyesCounter, eyesDetectedStableState]);
 
   if (!isEnabled || !showPreview) { // Keep this check to hide the component when not needed
     return null;
@@ -165,6 +243,9 @@ export function GazeDetector({ onGazeChange, onError, onInitialized, isEnabled, 
         />
         <div className="absolute top-2 left-2 px-2 py-1 bg-background/80 backdrop-blur-sm rounded text-xs font-medium text-primary">
           Webcam Preview
+        </div>
+        <div className="absolute top-2 right-2 px-2 py-1 bg-background/80 backdrop-blur-sm rounded text-xs font-medium text-primary">
+          {fps} FPS
         </div>
       </div>
     </div>
