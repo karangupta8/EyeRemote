@@ -39,7 +39,6 @@ export function GazeDetector({ onGazeChange, onError, onInitialized, isEnabled, 
         faceLandmarkerRef.current = faceLandmarker;
         setIsInitialized(true);
         onError(null);
-        toast.success("Gaze detection initialized");
       } catch (error) {
         console.error("Failed to initialize face landmarker:", error);
         onError("initialization-failed");

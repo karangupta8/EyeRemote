@@ -19,7 +19,6 @@ export function URLInput({ onVideoLoad }: URLInputProps) {
       return;
     }
     onVideoLoad(url);
-    toast.success("Video loaded successfully!");
   };
 
   return (

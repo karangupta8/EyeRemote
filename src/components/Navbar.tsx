@@ -31,20 +31,20 @@ export function Navbar({
             <div className="flex items-center justify-center w-10 h-10 rounded-lg bg-primary/10 group-hover:bg-primary/20 transition-colors">
               <Eye className="w-6 h-6 text-primary group-hover:scale-110 transition-transform" />
             </div>
-            <div>
-              <h1 className="text-xl font-bold text-foreground text-left">EyeRemote</h1>
-              <p className="text-xs text-muted-foreground text-left">
+            <div className="flex flex-col items-start">
+              <h1 className="text-xl font-bold text-foreground">EyeRemote</h1>
+              <p className="text-xs text-muted-foreground hidden md:block">
                 Your eyes are the play button
               </p>
             </div>
           </button>
           
           {/* Settings Controls */}
-          <div className="flex items-center gap-6 flex-wrap">
+          <div className="flex items-center gap-3 md:gap-6 flex-wrap">
             {/* Detection Toggle */}
             <div className="flex items-center gap-2">
               <Eye className="w-4 h-4 text-primary" />
-              <Label htmlFor="detection" className="text-sm cursor-pointer">Detection</Label>
+              <Label htmlFor="detection" className="text-sm cursor-pointer hidden md:inline">Detection</Label>
               <Switch
                 id="detection"
                 checked={detectionEnabled}
@@ -55,22 +55,23 @@ export function Navbar({
             {/* Pause Delay */}
             <div className="flex items-center gap-2">
               <Clock className="w-4 h-4 text-primary" />
-              <Label className="text-sm">Delay: {pauseDelay}s</Label>
+              <Label className="text-sm hidden md:inline">Delay: </Label>
+              <Label className="text-sm">{pauseDelay}s</Label>
               <Slider
                 min={1}
                 max={5}
-                step={1}
-                value={[pauseDelay]}
-                onValueChange={([value]) => onPauseDelayChange(value)}
-                disabled={!detectionEnabled}
-                className="w-24"
+              step={1}
+              value={[pauseDelay]}
+              onValueChange={([value]) => onPauseDelayChange(value)}
+              disabled={!detectionEnabled}
+              className="w-16 md:w-24"
               />
             </div>
 
             {/* Preview Toggle */}
             <div className="flex items-center gap-2">
               <Video className="w-4 h-4 text-primary" />
-              <Label htmlFor="preview" className="text-sm cursor-pointer">Preview</Label>
+              <Label htmlFor="preview" className="text-sm cursor-pointer hidden md:inline">Preview</Label>
               <Switch
                 id="preview"
                 checked={previewEnabled}
