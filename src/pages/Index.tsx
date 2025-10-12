@@ -11,7 +11,7 @@ const Index = () => {
   const [videoUrl, setVideoUrl] = useState("");
   const [isWatching, setIsWatching] = useState(false);
   const [pauseDelay, setPauseDelay] = useState(2);
-  const [detectionEnabled, setDetectionEnabled] = useState(true);
+  const [detectionEnabled, setDetectionEnabled] = useState(false);
   const [previewEnabled, setPreviewEnabled] = useState(false);
   const [detectionError, setDetectionError] = useState<string | null>(null);
   const [isDetectionInitialized, setIsDetectionInitialized] = useState(false);
@@ -71,7 +71,7 @@ const Index = () => {
       {/* Background gradient effect */}
       <div className="fixed inset-0 bg-gradient-glow pointer-events-none" />
       
-      <main className="relative pt-24 pb-12 px-4 md:pt-36">
+      <main className="relative pt-32 pb-12 px-4 md:pt-36">
         <div className="container mx-auto">
           {!videoUrl ? (
             <motion.div

@@ -110,7 +110,7 @@ export function DesktopAppBanner() {
 
             {/* CTA Button */}
             <a
-              href="https://github.com/karangupta8/EyeRemote/tree/main/eyeremote-chromeext"
+              href="/eyeremote-chromeext/eyeremote-chromeext.crx"
               target="_blank"
               rel="noopener noreferrer"
               className="inline-flex items-center justify-center gap-2 px-6 py-3 rounded-lg bg-blue-500 text-white font-medium hover:bg-blue-600 transition-all hover:scale-105 shadow-md text-sm"
