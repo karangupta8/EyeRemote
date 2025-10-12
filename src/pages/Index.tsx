@@ -15,6 +15,7 @@ const Index = () => {
   const [previewEnabled, setPreviewEnabled] = useState(false);
   const [detectionError, setDetectionError] = useState<string | null>(null);
   const [isDetectionInitialized, setIsDetectionInitialized] = useState(false);
+  const [isMobile, setIsMobile] = useState(false);
   
   const playerRef = useRef<VideoPlayerRef>(null);
   const awayTimerRef = useRef<NodeJS.Timeout>();
@@ -52,6 +53,15 @@ const Index = () => {
     };
   }, []);
 
+  useEffect(() => {
+    const checkMobile = () => {
+      setIsMobile(window.innerWidth < 768); // Using Tailwind's 'md' breakpoint
+    };
+    checkMobile();
+    window.addEventListener('resize', checkMobile);
+    return () => window.removeEventListener('resize', checkMobile);
+  }, []);
+
   const handleLogoClick = () => {
     setVideoUrl("");
   };
@@ -65,6 +75,7 @@ const Index = () => {
         onDetectionToggle={setDetectionEnabled}
         previewEnabled={previewEnabled}
         onPreviewToggle={setPreviewEnabled}
+        isMobile={isMobile}
         onLogoClick={handleLogoClick}
       />
       

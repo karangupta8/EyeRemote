@@ -10,6 +10,7 @@ interface NavbarProps {
   onDetectionToggle: (enabled: boolean) => void;
   previewEnabled: boolean;
   onPreviewToggle: (enabled: boolean) => void;
+  isMobile: boolean;
   onLogoClick: () => void;
 }
 
@@ -20,6 +21,7 @@ export function Navbar({
   onDetectionToggle,
   previewEnabled,
   onPreviewToggle,
+  isMobile,
   onLogoClick,
 }: NavbarProps) {
   return (
@@ -69,16 +71,18 @@ export function Navbar({
             </div>
 
             {/* Preview Toggle */}
-            <div className="flex items-center gap-2">
-              <Video className="w-4 h-4 text-primary" />
-              <Label htmlFor="preview" className="text-sm cursor-pointer hidden md:inline">Preview</Label>
-              <Switch
-                id="preview"
-                checked={previewEnabled}
-                onCheckedChange={onPreviewToggle}
-                disabled={!detectionEnabled}
-              />
-            </div>
+            {!isMobile && (
+              <div className="flex items-center gap-2">
+                <Video className="w-4 h-4 text-primary" />
+                <Label htmlFor="preview" className="text-sm cursor-pointer hidden md:inline">Preview</Label>
+                <Switch
+                  id="preview"
+                  checked={previewEnabled}
+                  onCheckedChange={onPreviewToggle}
+                  disabled={!detectionEnabled}
+                />
+              </div>
+            )}
           </div>
         </div>
       </div>
