@@ -240,32 +240,39 @@ export function GazeDetector({ onGazeChange, onError, onInitialized, isEnabled, 
     // Refs are excluded from dependencies as they don't trigger re-renders
   }, [isEnabled, onGazeChange, onError, onInitialized, showPreview]);
 
-  if (!isEnabled || !showPreview) { // Keep this check to hide the component when not needed
+  if (!isEnabled) {
     return null;
   }
 
   return (
-    <div className="flex justify-center">
-      <div className="relative w-48 h-36 rounded-lg overflow-hidden border-2 border-primary shadow-glow opacity-80 hover:opacity-100 transition-opacity">
+    <div className={showPreview ? "flex justify-center" : "fixed -top-full"}>
+      <div className={showPreview 
+        ? "relative w-48 h-36 rounded-lg overflow-hidden border-2 border-primary shadow-glow opacity-80 hover:opacity-100 transition-opacity"
+        : "w-0 h-0 overflow-hidden opacity-0"
+      }>
         <video
           ref={videoRef}
           autoPlay
           playsInline
           muted
-          className="absolute inset-0 w-full h-full object-cover"
+          className={showPreview ? "absolute inset-0 w-full h-full object-cover" : "w-full h-full"}
         />
         <canvas
           ref={canvasRef}
           width={640}
           height={480}
-          className="absolute inset-0 w-full h-full object-cover"
+          className={showPreview ? "absolute inset-0 w-full h-full object-cover" : "w-full h-full"}
         />
-        <div className="absolute top-2 left-2 px-2 py-1 bg-background/80 backdrop-blur-sm rounded text-xs font-medium text-primary">
-          Webcam Preview
-        </div>
-        <div className="absolute top-2 right-2 px-2 py-1 bg-background/80 backdrop-blur-sm rounded text-xs font-medium text-primary">
-          {fps} FPS
-        </div>
+        {showPreview && (
+          <>
+            <div className="absolute top-2 left-2 px-2 py-1 bg-background/80 backdrop-blur-sm rounded text-xs font-medium text-primary">
+              Webcam Preview
+            </div>
+            <div className="absolute top-2 right-2 px-2 py-1 bg-background/80 backdrop-blur-sm rounded text-xs font-medium text-primary">
+              {fps} FPS
+            </div>
+          </>
+        )}
       </div>
     </div>
   );
