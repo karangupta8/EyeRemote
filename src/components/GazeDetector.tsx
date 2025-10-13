@@ -28,7 +28,7 @@ export function GazeDetector({ onGazeChange, onError, onInitialized, isEnabled, 
   
   // Constants for state smoothing (matching desktop app)
   const EYES_PRESENT_THRESHOLD = 3;  // Frames to confirm eyes are present (increased for stability)
-  const NO_EYES_THRESHOLD = 3;       // Frames to confirm eyes are gone (balanced for responsiveness)
+  const NO_EYES_THRESHOLD = 4;       // Frames to confirm eyes are gone (increased for stability)
   const PROCESS_INTERVAL = 100;      // 100ms = ~10 FPS (matching desktop app's 0.1s delay)
 
   useEffect(() => {
