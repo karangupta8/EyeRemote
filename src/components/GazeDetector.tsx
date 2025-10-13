@@ -17,18 +17,18 @@ export function GazeDetector({ onGazeChange, onError, onInitialized, isEnabled, 
   const animationFrameRef = useRef<number>();
   const [isInitialized, setIsInitialized] = useState(false);
   
-  // State smoothing logic (matching desktop app implementation)
-  const [eyesPresentCounter, setEyesPresentCounter] = useState(0);
-  const [noEyesCounter, setNoEyesCounter] = useState(0);
-  const [eyesDetectedStableState, setEyesDetectedStableState] = useState(false);
+  // State smoothing logic with refs for immediate updates (matching desktop app implementation)
+  const eyesPresentCounterRef = useRef(0);
+  const noEyesCounterRef = useRef(0);
+  const eyesDetectedStableStateRef = useRef(false);
   const lastProcessTimeRef = useRef(0);
   const frameCountRef = useRef(0);
   const lastFpsTimeRef = useRef(performance.now());
   const [fps, setFps] = useState(0);
   
   // Constants for state smoothing (matching desktop app)
-  const EYES_PRESENT_THRESHOLD = 2;  // Frames to confirm eyes are present
-  const NO_EYES_THRESHOLD = 3;       // Frames to confirm eyes are gone
+  const EYES_PRESENT_THRESHOLD = 3;  // Frames to confirm eyes are present (increased for stability)
+  const NO_EYES_THRESHOLD = 4;       // Frames to confirm eyes are gone (increased for stability)
   const PROCESS_INTERVAL = 100;      // 100ms = ~10 FPS (matching desktop app's 0.1s delay)
 
   useEffect(() => {
@@ -43,7 +43,7 @@ export function GazeDetector({ onGazeChange, onError, onInitialized, isEnabled, 
         const faceLandmarker = await FaceLandmarker.createFromOptions(vision, {
           baseOptions: {
             modelAssetPath: "https://storage.googleapis.com/mediapipe-models/face_landmarker/face_landmarker/float16/1/face_landmarker.task",
-            delegate: "CPU" // Use CPU for better compatibility and stability
+            delegate: "GPU" // Use GPU for better performance
           },
           runningMode: "VIDEO",
           numFaces: 1
@@ -168,26 +168,45 @@ export function GazeDetector({ onGazeChange, onError, onInitialized, isEnabled, 
             const leftEyeLandmarks = [33, 7, 163, 144, 145, 153, 154, 155, 133, 173, 157, 158, 159, 160, 161, 246];
             const rightEyeLandmarks = [362, 382, 381, 380, 374, 373, 390, 249, 263, 466, 388, 387, 386, 385, 384, 398];
             
-            // Check if we have valid landmarks for both eyes
-            const hasLeftEye = leftEyeLandmarks.some(index => landmarks[index] && landmarks[index].x > 0 && landmarks[index].y > 0);
-            const hasRightEye = rightEyeLandmarks.some(index => landmarks[index] && landmarks[index].x > 0 && landmarks[index].y > 0);
+            // Count valid landmarks for each eye (more robust detection)
+            const leftEyeValidCount = leftEyeLandmarks.filter(index => 
+              landmarks[index] && landmarks[index].x > 0 && landmarks[index].y > 0 && 
+              landmarks[index].x < 1 && landmarks[index].y < 1
+            ).length;
+            
+            const rightEyeValidCount = rightEyeLandmarks.filter(index => 
+              landmarks[index] && landmarks[index].x > 0 && landmarks[index].y > 0 && 
+              landmarks[index].x < 1 && landmarks[index].y < 1
+            ).length;
+            
+            // Consider eyes detected if we have at least 50% of landmarks for each eye
+            const hasLeftEye = leftEyeValidCount >= leftEyeLandmarks.length * 0.5;
+            const hasRightEye = rightEyeValidCount >= rightEyeLandmarks.length * 0.5;
             
             isEyesDetected = hasLeftEye && hasRightEye;
           }
           
-          // State smoothing logic (matching desktop app implementation)
+          // State smoothing logic using refs for immediate updates (matching desktop app implementation)
           if (isEyesDetected) {
-            setNoEyesCounter(0);
-            setEyesPresentCounter(prev => prev + 1);
-            if (eyesPresentCounter >= EYES_PRESENT_THRESHOLD && !eyesDetectedStableState) {
-              setEyesDetectedStableState(true);
+            noEyesCounterRef.current = 0;
+            eyesPresentCounterRef.current += 1;
+            
+            console.log(`[GazeDetector] Eyes detected - Counter: ${eyesPresentCounterRef.current}/${EYES_PRESENT_THRESHOLD}, State: ${eyesDetectedStableStateRef.current}`);
+            
+            if (eyesPresentCounterRef.current >= EYES_PRESENT_THRESHOLD && !eyesDetectedStableStateRef.current) {
+              eyesDetectedStableStateRef.current = true;
+              console.log('[GazeDetector] State changed to WATCHING');
               onGazeChange(true);
             }
           } else {
-            setEyesPresentCounter(0);
-            setNoEyesCounter(prev => prev + 1);
-            if (noEyesCounter >= NO_EYES_THRESHOLD && eyesDetectedStableState) {
-              setEyesDetectedStableState(false);
+            eyesPresentCounterRef.current = 0;
+            noEyesCounterRef.current += 1;
+            
+            console.log(`[GazeDetector] No eyes - Counter: ${noEyesCounterRef.current}/${NO_EYES_THRESHOLD}, State: ${eyesDetectedStableStateRef.current}`);
+            
+            if (noEyesCounterRef.current >= NO_EYES_THRESHOLD && eyesDetectedStableStateRef.current) {
+              eyesDetectedStableStateRef.current = false;
+              console.log('[GazeDetector] State changed to LOOKING AWAY');
               onGazeChange(false);
             }
           }
@@ -213,13 +232,13 @@ export function GazeDetector({ onGazeChange, onError, onInitialized, isEnabled, 
       onInitialized(false);
       
       // Reset state smoothing counters
-      setEyesPresentCounter(0);
-      setNoEyesCounter(0);
-      setEyesDetectedStableState(false);
+      eyesPresentCounterRef.current = 0;
+      noEyesCounterRef.current = 0;
+      eyesDetectedStableStateRef.current = false;
       setFps(0);
     };
-    // showPreview is removed from dependencies as it's now controlled by isEnabled
-  }, [isEnabled, onGazeChange, onError, onInitialized, eyesPresentCounter, noEyesCounter, eyesDetectedStableState]);
+    // Refs are excluded from dependencies as they don't trigger re-renders
+  }, [isEnabled, onGazeChange, onError, onInitialized, showPreview]);
 
   if (!isEnabled || !showPreview) { // Keep this check to hide the component when not needed
     return null;
