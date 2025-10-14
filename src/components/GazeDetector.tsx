@@ -233,7 +233,7 @@ export function GazeDetector({ onGazeChange, onError, onInitialized, isEnabled, 
       eyesDetectedStableStateRef.current = false;
       setFps(0);
     };
-  }, [isEnabled, isInitialized, onGazeChange, onError, onInitialized]);
+  }, [isEnabled, isInitialized, showPreview, onGazeChange, onError, onInitialized]);
 
   if (!isEnabled) {
     return null;
