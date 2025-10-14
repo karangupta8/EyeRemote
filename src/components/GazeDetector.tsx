@@ -28,7 +28,7 @@ export function GazeDetector({ onGazeChange, onError, onInitialized, isEnabled, 
   
   // Constants for state smoothing (matching desktop app)
   const EYES_PRESENT_THRESHOLD = 3;  // Frames to confirm eyes are present (increased for stability)
-  const NO_EYES_THRESHOLD = 4;       // Frames to confirm eyes are gone (increased for stability)
+  const NO_EYES_THRESHOLD = 2;       // Frames to confirm eyes are gone (faster away detection)
   const PROCESS_INTERVAL = 100;      // 100ms = ~10 FPS (matching desktop app's 0.1s delay)
 
   useEffect(() => {
@@ -245,10 +245,10 @@ export function GazeDetector({ onGazeChange, onError, onInitialized, isEnabled, 
   }
 
   return (
-    <div className={showPreview ? "flex justify-center" : "fixed -top-full"}>
+    <div className={showPreview ? "flex justify-center" : "fixed -left-[9999px] -top-[9999px]"}>
       <div className={showPreview 
         ? "relative w-48 h-36 rounded-lg overflow-hidden border-2 border-primary shadow-glow opacity-80 hover:opacity-100 transition-opacity"
-        : "w-0 h-0 overflow-hidden opacity-0"
+        : "w-[640px] h-[480px]"
       }>
         <video
           ref={videoRef}
