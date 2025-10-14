@@ -31,9 +31,8 @@ export function GazeDetector({ onGazeChange, onError, onInitialized, isEnabled, 
   const NO_EYES_THRESHOLD = 2;       // Frames to confirm eyes are gone (faster away detection)
   const PROCESS_INTERVAL = 100;      // 100ms = ~10 FPS (matching desktop app's 0.1s delay)
 
+  // Initialize face landmarker once
   useEffect(() => {
-    let stream: MediaStream | null = null;
-
     const initializeFaceLandmarker = async () => {
       try {
         const vision = await FilesetResolver.forVisionTasks(
@@ -43,7 +42,7 @@ export function GazeDetector({ onGazeChange, onError, onInitialized, isEnabled, 
         const faceLandmarker = await FaceLandmarker.createFromOptions(vision, {
           baseOptions: {
             modelAssetPath: "https://storage.googleapis.com/mediapipe-models/face_landmarker/face_landmarker/float16/1/face_landmarker.task",
-            delegate: "GPU" // Use GPU for better performance
+            delegate: "GPU"
           },
           runningMode: "VIDEO",
           numFaces: 1
@@ -58,6 +57,13 @@ export function GazeDetector({ onGazeChange, onError, onInitialized, isEnabled, 
         toast.error("Failed to initialize gaze detection");
       }
     };
+
+    initializeFaceLandmarker();
+  }, []); // Initialize once on mount
+
+  // Handle webcam and detection based on isEnabled
+  useEffect(() => {
+    let stream: MediaStream | null = null;
 
     const startWebcam = async () => {
       try {
@@ -89,16 +95,14 @@ export function GazeDetector({ onGazeChange, onError, onInitialized, isEnabled, 
     const predictWebcam = () => {
       if (!faceLandmarkerRef.current || !videoRef.current) return;
 
-      // If detection is off but preview is on, we still need to draw to the canvas.
-      // But we should stop the animation frame if neither is enabled.
-      if (!isEnabled && !showPreview) {
+      if (!isEnabled) {
         return; 
       }
 
       const video = videoRef.current;
       const canvas = canvasRef.current;
       
-      // Frame rate control - only process every PROCESS_INTERVAL ms (matching desktop app)
+      // Frame rate control
       const now = performance.now();
       if (now - lastProcessTimeRef.current < PROCESS_INTERVAL) {
         animationFrameRef.current = requestAnimationFrame(predictWebcam);
@@ -106,7 +110,7 @@ export function GazeDetector({ onGazeChange, onError, onInitialized, isEnabled, 
       }
       lastProcessTimeRef.current = now;
 
-      // FPS calculation for debugging
+      // FPS calculation
       frameCountRef.current++;
       if (now - lastFpsTimeRef.current >= 1000) {
         setFps(Math.round(frameCountRef.current * 1000 / (now - lastFpsTimeRef.current)));
@@ -138,11 +142,11 @@ export function GazeDetector({ onGazeChange, onError, onInitialized, isEnabled, 
                 );
               });
 
-              // Highlight eye landmarks specifically
+              // Highlight eye landmarks
               const leftEyeLandmarks = [33, 7, 163, 144, 145, 153, 154, 155, 133, 173, 157, 158, 159, 160, 161, 246];
               const rightEyeLandmarks = [362, 382, 381, 380, 374, 373, 390, 249, 263, 466, 388, 387, 386, 385, 384, 398];
               
-              ctx.fillStyle = 'rgba(34, 197, 94, 0.8)'; // Green for eye landmarks
+              ctx.fillStyle = 'rgba(34, 197, 94, 0.8)';
               [...leftEyeLandmarks, ...rightEyeLandmarks].forEach((index) => {
                 if (landmarks[index]) {
                   ctx.fillRect(
@@ -157,58 +161,53 @@ export function GazeDetector({ onGazeChange, onError, onInitialized, isEnabled, 
           }
         }
         
-        // Enhanced eye detection with state smoothing (matching desktop app logic)
-        if (isEnabled) {
-          let isEyesDetected = false;
+        // Eye detection with state smoothing
+        let isEyesDetected = false;
+        
+        if (results.faceLandmarks && results.faceLandmarks.length > 0) {
+          const landmarks = results.faceLandmarks[0];
           
-          if (results.faceLandmarks && results.faceLandmarks.length > 0) {
-            const landmarks = results.faceLandmarks[0];
-            
-            // Check for specific eye landmarks (MediaPipe provides 468 face landmarks)
-            const leftEyeLandmarks = [33, 7, 163, 144, 145, 153, 154, 155, 133, 173, 157, 158, 159, 160, 161, 246];
-            const rightEyeLandmarks = [362, 382, 381, 380, 374, 373, 390, 249, 263, 466, 388, 387, 386, 385, 384, 398];
-            
-            // Count valid landmarks for each eye (more robust detection)
-            const leftEyeValidCount = leftEyeLandmarks.filter(index => 
-              landmarks[index] && landmarks[index].x > 0 && landmarks[index].y > 0 && 
-              landmarks[index].x < 1 && landmarks[index].y < 1
-            ).length;
-            
-            const rightEyeValidCount = rightEyeLandmarks.filter(index => 
-              landmarks[index] && landmarks[index].x > 0 && landmarks[index].y > 0 && 
-              landmarks[index].x < 1 && landmarks[index].y < 1
-            ).length;
-            
-            // Consider eyes detected if we have at least 50% of landmarks for each eye
-            const hasLeftEye = leftEyeValidCount >= leftEyeLandmarks.length * 0.5;
-            const hasRightEye = rightEyeValidCount >= rightEyeLandmarks.length * 0.5;
-            
-            isEyesDetected = hasLeftEye && hasRightEye;
+          const leftEyeLandmarks = [33, 7, 163, 144, 145, 153, 154, 155, 133, 173, 157, 158, 159, 160, 161, 246];
+          const rightEyeLandmarks = [362, 382, 381, 380, 374, 373, 390, 249, 263, 466, 388, 387, 386, 385, 384, 398];
+          
+          const leftEyeValidCount = leftEyeLandmarks.filter(index => 
+            landmarks[index] && landmarks[index].x > 0 && landmarks[index].y > 0 && 
+            landmarks[index].x < 1 && landmarks[index].y < 1
+          ).length;
+          
+          const rightEyeValidCount = rightEyeLandmarks.filter(index => 
+            landmarks[index] && landmarks[index].x > 0 && landmarks[index].y > 0 && 
+            landmarks[index].x < 1 && landmarks[index].y < 1
+          ).length;
+          
+          const hasLeftEye = leftEyeValidCount >= leftEyeLandmarks.length * 0.5;
+          const hasRightEye = rightEyeValidCount >= rightEyeLandmarks.length * 0.5;
+          
+          isEyesDetected = hasLeftEye && hasRightEye;
+        }
+        
+        // State smoothing logic
+        if (isEyesDetected) {
+          noEyesCounterRef.current = 0;
+          eyesPresentCounterRef.current += 1;
+          
+          console.log(`[GazeDetector] Eyes detected - Counter: ${eyesPresentCounterRef.current}/${EYES_PRESENT_THRESHOLD}, State: ${eyesDetectedStableStateRef.current}`);
+          
+          if (eyesPresentCounterRef.current >= EYES_PRESENT_THRESHOLD && !eyesDetectedStableStateRef.current) {
+            eyesDetectedStableStateRef.current = true;
+            console.log('[GazeDetector] State changed to WATCHING');
+            onGazeChange(true);
           }
+        } else {
+          eyesPresentCounterRef.current = 0;
+          noEyesCounterRef.current += 1;
           
-          // State smoothing logic using refs for immediate updates (matching desktop app implementation)
-          if (isEyesDetected) {
-            noEyesCounterRef.current = 0;
-            eyesPresentCounterRef.current += 1;
-            
-            console.log(`[GazeDetector] Eyes detected - Counter: ${eyesPresentCounterRef.current}/${EYES_PRESENT_THRESHOLD}, State: ${eyesDetectedStableStateRef.current}`);
-            
-            if (eyesPresentCounterRef.current >= EYES_PRESENT_THRESHOLD && !eyesDetectedStableStateRef.current) {
-              eyesDetectedStableStateRef.current = true;
-              console.log('[GazeDetector] State changed to WATCHING');
-              onGazeChange(true);
-            }
-          } else {
-            eyesPresentCounterRef.current = 0;
-            noEyesCounterRef.current += 1;
-            
-            console.log(`[GazeDetector] No eyes - Counter: ${noEyesCounterRef.current}/${NO_EYES_THRESHOLD}, State: ${eyesDetectedStableStateRef.current}`);
-            
-            if (noEyesCounterRef.current >= NO_EYES_THRESHOLD && eyesDetectedStableStateRef.current) {
-              eyesDetectedStableStateRef.current = false;
-              console.log('[GazeDetector] State changed to LOOKING AWAY');
-              onGazeChange(false);
-            }
+          console.log(`[GazeDetector] No eyes - Counter: ${noEyesCounterRef.current}/${NO_EYES_THRESHOLD}, State: ${eyesDetectedStableStateRef.current}`);
+          
+          if (noEyesCounterRef.current >= NO_EYES_THRESHOLD && eyesDetectedStableStateRef.current) {
+            eyesDetectedStableStateRef.current = false;
+            console.log('[GazeDetector] State changed to LOOKING AWAY');
+            onGazeChange(false);
           }
         }
       }
@@ -216,9 +215,7 @@ export function GazeDetector({ onGazeChange, onError, onInitialized, isEnabled, 
       animationFrameRef.current = requestAnimationFrame(predictWebcam);
     };
 
-    // Only start webcam if detection is enabled. Preview is an add-on.
-    if (isEnabled) {
-      initializeFaceLandmarker();
+    if (isEnabled && isInitialized) {
       startWebcam();
     }
 
@@ -231,14 +228,12 @@ export function GazeDetector({ onGazeChange, onError, onInitialized, isEnabled, 
       }
       onInitialized(false);
       
-      // Reset state smoothing counters
       eyesPresentCounterRef.current = 0;
       noEyesCounterRef.current = 0;
       eyesDetectedStableStateRef.current = false;
       setFps(0);
     };
-    // Refs are excluded from dependencies as they don't trigger re-renders
-  }, [isEnabled, onGazeChange, onError, onInitialized, showPreview]);
+  }, [isEnabled, isInitialized, showPreview, onGazeChange, onError, onInitialized]);
 
   if (!isEnabled) {
     return null;
