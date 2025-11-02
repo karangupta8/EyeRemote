@@ -73,7 +73,25 @@ export function GazeDetector({ onGazeChange, onError, onInitialized, isEnabled, 
 
         if (videoRef.current) {
           videoRef.current.srcObject = stream;
-          videoRef.current.addEventListener('loadeddata', predictWebcam);
+          
+          // Add both event listeners for robustness
+          const startPrediction = () => {
+            if (videoRef.current && videoRef.current.readyState >= 2) {
+              console.log('Video ready, starting prediction. readyState:', videoRef.current.readyState);
+              predictWebcam();
+            } else {
+              console.log('Video not ready yet. readyState:', videoRef.current?.readyState);
+            }
+          };
+          
+          videoRef.current.addEventListener('loadeddata', startPrediction);
+          videoRef.current.addEventListener('canplay', startPrediction);
+          
+          // Force play to ensure frames flow
+          videoRef.current.play().catch(err => {
+            console.error('Failed to start video:', err);
+            onError('camera-error');
+          });
         }
         onError(null);
         onInitialized(true);
@@ -118,8 +136,14 @@ export function GazeDetector({ onGazeChange, onError, onInitialized, isEnabled, 
         lastFpsTimeRef.current = now;
       }
       
-      if (video.readyState === video.HAVE_ENOUGH_DATA) {
-        const results = faceLandmarkerRef.current.detectForVideo(video, performance.now());
+    if (video.readyState === video.HAVE_ENOUGH_DATA) {
+      const results = faceLandmarkerRef.current.detectForVideo(video, performance.now());
+      
+      // Debug log for first few frames
+      if (frameCountRef.current < 5) {
+        console.log('MediaPipe detection frame:', frameCountRef.current, 
+          'Face detected:', results.faceLandmarks && results.faceLandmarks.length > 0);
+      }
         
         // Draw on canvas if preview is enabled
         if (canvas && showPreview) {
@@ -233,17 +257,20 @@ export function GazeDetector({ onGazeChange, onError, onInitialized, isEnabled, 
       eyesDetectedStableStateRef.current = false;
       setFps(0);
     };
-  }, [isEnabled, isInitialized, showPreview, onGazeChange, onError, onInitialized]);
+  }, [isEnabled, isInitialized, onGazeChange, onError, onInitialized]); // showPreview removed from dependencies
 
   if (!isEnabled) {
     return null;
   }
 
   return (
-    <div className={showPreview ? "flex justify-center" : "fixed -left-[9999px] -top-[9999px]"}>
+    <div className={showPreview 
+      ? "flex justify-center" 
+      : "fixed top-4 right-4 opacity-0 pointer-events-none"
+    }>
       <div className={showPreview 
         ? "relative w-48 h-36 rounded-lg overflow-hidden border-2 border-primary shadow-glow opacity-80 hover:opacity-100 transition-opacity"
-        : "w-[640px] h-[480px]"
+        : "relative w-[640px] h-[480px]"
       }>
         <video
           ref={videoRef}

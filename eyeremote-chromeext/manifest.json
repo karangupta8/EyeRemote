@@ -10,14 +10,28 @@
     "camera"
   ],
   "host_permissions": [
-    "*://*.youtube.com/*"
+    "*://*.youtube.com/*",
+    "*://*.netflix.com/*",
+    "*://*.disneyplus.com/*",
+    "*://*.hulu.com/*",
+    "*://*.primevideo.com/*",
+    "*://*.max.com/*",
+    "*://*.peacocktv.com/*"
   ],
   "background": {
     "service_worker": "background.js"
   },
   "content_scripts": [
     {
-      "matches": ["*://*.youtube.com/*"],
+      "matches": [
+        "*://*.youtube.com/*",
+        "*://*.netflix.com/*",
+        "*://*.disneyplus.com/*",
+        "*://*.hulu.com/*",
+        "*://*.primevideo.com/*",
+        "*://*.max.com/*",
+        "*://*.peacocktv.com/*"
+      ],
       "js": ["content.js"]
     }
   ],
@@ -41,7 +55,15 @@
         "lib/tasks-vision.js",
         "gazeDetector.js"
       ],
-      "matches": ["*://*.youtube.com/*"]
+      "matches": [
+        "*://*.youtube.com/*",
+        "*://*.netflix.com/*",
+        "*://*.disneyplus.com/*",
+        "*://*.hulu.com/*",
+        "*://*.primevideo.com/*",
+        "*://*.max.com/*",
+        "*://*.peacocktv.com/*"
+      ]
     }
   ],
   "content_security_policy": {

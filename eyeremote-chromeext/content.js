@@ -329,25 +329,97 @@ function clearPauseTimer() {
 }
 
 /**
+ * Detect platform and get appropriate player controls
+ */
+function getPlatformControls() {
+  const hostname = window.location.hostname;
+  
+  if (hostname.includes('youtube.com')) {
+    return {
+      name: 'YouTube',
+      pause: () => {
+        if (window.yt && window.yt.player && window.yt.player.getPlayerByElement) {
+          const player = window.yt.player.getPlayerByElement(currentVideo);
+          if (player && player.pauseVideo) {
+            player.pauseVideo();
+            return true;
+          }
+        }
+        return false;
+      },
+      play: () => {
+        if (window.yt && window.yt.player && window.yt.player.getPlayerByElement) {
+          const player = window.yt.player.getPlayerByElement(currentVideo);
+          if (player && player.playVideo) {
+            player.playVideo();
+            return true;
+          }
+        }
+        return false;
+      }
+    };
+  }
+  
+  if (hostname.includes('netflix.com')) {
+    return {
+      name: 'Netflix',
+      pause: () => {
+        // Netflix uses keyboard shortcuts
+        document.dispatchEvent(new KeyboardEvent('keydown', { key: ' ', keyCode: 32, code: 'Space' }));
+        return true;
+      },
+      play: () => {
+        document.dispatchEvent(new KeyboardEvent('keydown', { key: ' ', keyCode: 32, code: 'Space' }));
+        return true;
+      }
+    };
+  }
+  
+  if (hostname.includes('disneyplus.com') || hostname.includes('hulu.com') || 
+      hostname.includes('primevideo.com') || hostname.includes('max.com') || 
+      hostname.includes('peacocktv.com')) {
+    return {
+      name: hostname.includes('disneyplus.com') ? 'Disney+' : 
+            hostname.includes('hulu.com') ? 'Hulu' :
+            hostname.includes('primevideo.com') ? 'Prime Video' :
+            hostname.includes('max.com') ? 'Max' : 'Peacock',
+      pause: () => {
+        // Try keyboard shortcut first
+        document.dispatchEvent(new KeyboardEvent('keydown', { key: ' ', keyCode: 32, code: 'Space' }));
+        return true;
+      },
+      play: () => {
+        document.dispatchEvent(new KeyboardEvent('keydown', { key: ' ', keyCode: 32, code: 'Space' }));
+        return true;
+      }
+    };
+  }
+  
+  return null;
+}
+
+/**
  * Pause video
  */
 function pauseVideo() {
   if (!currentVideo || currentVideo.paused) return;
   
   try {
-    // Try YouTube API first
-    if (window.yt && window.yt.player && window.yt.player.getPlayerByElement) {
-      const player = window.yt.player.getPlayerByElement(currentVideo);
-      if (player && player.pauseVideo) {
-        player.pauseVideo();
-        console.log('Video paused via YouTube API');
+    const controls = getPlatformControls();
+    
+    if (controls) {
+      // Try platform-specific control first
+      if (controls.pause()) {
+        console.log(`Video paused via ${controls.name} control`);
+        wasPausedByExtension = true;
+        sendStatusUpdate();
+        return;
       }
-    } else {
-      // Fallback to direct control
-      currentVideo.pause();
-      console.log('Video paused via direct control');
     }
     
+    // Fallback to direct control
+    currentVideo.pause();
+    console.log('Video paused via direct control');
     wasPausedByExtension = true;
     sendStatusUpdate();
   } catch (error) {
@@ -362,19 +434,21 @@ function resumeVideo() {
   if (!currentVideo || !currentVideo.paused) return;
   
   try {
-    // Try YouTube API first
-    if (window.yt && window.yt.player && window.yt.player.getPlayerByElement) {
-      const player = window.yt.player.getPlayerByElement(currentVideo);
-      if (player && player.playVideo) {
-        player.playVideo();
-        console.log('Video resumed via YouTube API');
+    const controls = getPlatformControls();
+    
+    if (controls) {
+      // Try platform-specific control first
+      if (controls.play()) {
+        console.log(`Video resumed via ${controls.name} control`);
+        wasPausedByExtension = false;
+        sendStatusUpdate();
+        return;
       }
-    } else {
-      // Fallback to direct control
-      currentVideo.play();
-      console.log('Video resumed via direct control');
     }
     
+    // Fallback to direct control
+    currentVideo.play();
+    console.log('Video resumed via direct control');
     wasPausedByExtension = false;
     sendStatusUpdate();
   } catch (error) {
