@@ -35,24 +35,42 @@ export function ChromeExtensionBanner({ platform = "streaming sites" }: ChromeEx
                 variant="default"
                 className="bg-primary hover:bg-primary/90 text-primary-foreground"
                 onClick={() => {
-                  // Open extension installation page
-                  window.open('https://github.com/yourusername/eyeremote', '_blank');
+                  // Download the .crx file
+                  const link = document.createElement('a');
+                  link.href = '/eyeremote-chromeext/eyeremote-chromeext.crx';
+                  link.download = 'eyeremote-chromeext.crx';
+                  document.body.appendChild(link);
+                  link.click();
+                  document.body.removeChild(link);
                 }}
               >
                 <Download className="w-4 h-4 mr-2" />
-                Get Chrome Extension
+                Download Extension (.crx)
               </Button>
               
               <Button
                 variant="outline"
                 onClick={() => {
-                  // Open documentation
-                  window.open('https://github.com/yourusername/eyeremote#chrome-extension', '_blank');
+                  // Open the extension README
+                  window.open('/eyeremote-chromeext/README.md', '_blank');
                 }}
               >
                 <ExternalLink className="w-4 h-4 mr-2" />
                 Installation Guide
               </Button>
+            </div>
+            
+            <div className="mt-3 p-3 rounded-lg bg-muted/50 border border-border">
+              <p className="text-xs text-muted-foreground mb-2">
+                <strong>Installation Steps:</strong>
+              </p>
+              <ol className="text-xs text-muted-foreground space-y-1 list-decimal list-inside">
+                <li>Download the extension file (.crx)</li>
+                <li>Open Chrome and go to <code className="px-1 py-0.5 bg-background rounded">chrome://extensions</code></li>
+                <li>Enable "Developer mode" (toggle in top right)</li>
+                <li>Drag and drop the .crx file into the extensions page</li>
+                <li>Click "Add extension" when prompted</li>
+              </ol>
             </div>
             
             <div className="mt-4 p-3 rounded-lg bg-muted">
