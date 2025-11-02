@@ -97,7 +97,7 @@ const Index = () => {
                   transition={{ delay: 0.1 }}
                   className="text-4xl md:text-5xl font-bold text-foreground"
                 >
-                  Watch Videos with Your{" "}
+                  Control Video Playback with your{" "}
                   <span className="text-transparent bg-clip-text bg-gradient-primary">
                     Eyes
                   </span>
