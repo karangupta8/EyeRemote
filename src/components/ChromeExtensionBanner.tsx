@@ -1,13 +1,16 @@
 import { motion } from "framer-motion";
-import { Chrome, Download, ExternalLink } from "lucide-react";
+import { Chrome, ExternalLink } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Card } from "@/components/ui/card";
+import { useNavigate } from "react-router-dom";
 
 interface ChromeExtensionBannerProps {
   platform?: string;
 }
 
 export function ChromeExtensionBanner({ platform = "streaming sites" }: ChromeExtensionBannerProps) {
+  const navigate = useNavigate();
+  
   return (
     <motion.div
       initial={{ opacity: 0, y: 20 }}
@@ -34,29 +37,10 @@ export function ChromeExtensionBanner({ platform = "streaming sites" }: ChromeEx
               <Button
                 variant="default"
                 className="bg-primary hover:bg-primary/90 text-primary-foreground"
-                onClick={() => {
-                  // Download the .crx file
-                  const link = document.createElement('a');
-                  link.href = '/eyeremote-chromeext/eyeremote-chromeext.crx';
-                  link.download = 'eyeremote-chromeext.crx';
-                  document.body.appendChild(link);
-                  link.click();
-                  document.body.removeChild(link);
-                }}
-              >
-                <Download className="w-4 h-4 mr-2" />
-                Download Extension (.crx)
-              </Button>
-              
-              <Button
-                variant="outline"
-                onClick={() => {
-                  // Open the extension README
-                  window.open('/eyeremote-chromeext/README.md', '_blank');
-                }}
+                onClick={() => navigate('/extension-guide')}
               >
                 <ExternalLink className="w-4 h-4 mr-2" />
-                Installation Guide
+                View Installation Guide
               </Button>
             </div>
             
