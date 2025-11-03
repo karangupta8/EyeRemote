@@ -1,5 +1,6 @@
 import { motion } from "framer-motion";
-import { Download, Monitor, Shield, Zap, Chrome, Puzzle, Globe } from "lucide-react";
+import { Download, Monitor, Shield, Zap, Chrome, Puzzle, Globe, ExternalLink } from "lucide-react";
+import { Link } from "react-router-dom";
 
 export function DesktopAppBanner() {
   return (
@@ -109,15 +110,13 @@ export function DesktopAppBanner() {
             </div>
 
             {/* CTA Button */}
-            <a
-              href="/eyeremote-chromeext/eyeremote-chromeext.crx"
-              target="_blank"
-              rel="noopener noreferrer"
+            <Link
+              to="/extension-guide"
               className="inline-flex items-center justify-center gap-2 px-6 py-3 rounded-lg bg-blue-500 text-white font-medium hover:bg-blue-600 transition-all hover:scale-105 shadow-md text-sm"
             >
-              <Download className="w-4 h-4" />
-              Get Chrome Extension
-            </a>
+              <ExternalLink className="w-4 h-4" />
+              View Installation Guide
+            </Link>
           </div>
         </div>
       </div>
