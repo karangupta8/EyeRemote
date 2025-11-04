@@ -56,6 +56,27 @@ All processing happens **locally and offline** — no cloud dependencies, ensuri
 
 ## ✨ Features
 
+
+### 🌐 Web App Features
+
+- **For Users**
+  - ✅ Interactive documentation and guides
+  - ✅ Installation instructions for all platforms
+  - ✅ Chrome extension download and setup guide
+  - ✅ Desktop app feature showcase
+  - ✅ Live gaze detection demo (optional)
+  - ✅ Responsive design for mobile/tablet
+  - ✅ Dark mode support
+
+- **For Developers**
+  - ✅ React + TypeScript + Vite stack
+  - ✅ shadcn/ui component library
+  - ✅ TailwindCSS for styling
+  - ✅ React Router for navigation
+  - ✅ MediaPipe integration for browser demo
+  - ✅ Modular component architecture
+
+
 ### 🖥️ Desktop App Features
 
 - **For Users**
@@ -96,24 +117,6 @@ All processing happens **locally and offline** — no cloud dependencies, ensuri
   - ✅ YouTube API integration
   - ✅ PowerShell build scripts for packaging
 
-### 🌐 Web App Features
-
-- **For Users**
-  - ✅ Interactive documentation and guides
-  - ✅ Installation instructions for all platforms
-  - ✅ Chrome extension download and setup guide
-  - ✅ Desktop app feature showcase
-  - ✅ Live gaze detection demo (optional)
-  - ✅ Responsive design for mobile/tablet
-  - ✅ Dark mode support
-
-- **For Developers**
-  - ✅ React + TypeScript + Vite stack
-  - ✅ shadcn/ui component library
-  - ✅ TailwindCSS for styling
-  - ✅ React Router for navigation
-  - ✅ MediaPipe integration for browser demo
-  - ✅ Modular component architecture
 
 ## 🎥 Demo
 
@@ -346,8 +349,7 @@ sequenceDiagram
 | **FacePause** | Android | Pauses games/video when you leave webcam view | Multi-platform; configurable timeout; multi-face support; open source |
 | **Tobii Eye Tracker** | Hardware + Software | Commercial eye tracking with gaming/productivity focus | Software-only; no hardware required; privacy-focused offline processing |
 | **Eye Tracking Demos** | OpenCV tutorials | Educational eye detection examples | Production-ready apps; full media control; attention analytics roadmap |
-| **Google Smart Lock** | Android | Face unlock and presence detection | Focused on media control; attention tracking; cross-platform |
-| **Windows Hello** | Windows | Facial recognition for authentication | Media-specific use case; works with any player; privacy-first design |
+
 
 ### How This Project Differs
 
@@ -1143,11 +1145,6 @@ npm run deploy  # (requires gh-pages package)
 
 ## 🙏 Acknowledgments
 
-### Inspiration & Resources
-
-- **Original Idea**: Self-conceived in March 2018 during early cooking experiments
-- **OpenCV Tutorials**: [Eye Motion Tracking with Python](https://pysource.com/2019/01/04/eye-motion-tracking-opencv-with-python/)
-- **Accessibility Inspiration**: [Hands-Free Coding by Josh W. Comeau](https://www.joshwcomeau.com/blog/hands-free-coding/)
 
 ### Open Source Community
 
@@ -1157,11 +1154,6 @@ npm run deploy  # (requires gh-pages package)
 - **React Ecosystem**: Vite, TailwindCSS, shadcn/ui for web app
 - **Python Community**: PyAutoGUI, Tkinter, and countless tutorials
 
-### Prior Art
-
-- **FacePause**: Android app demonstrating similar concept (ProductHunt 2019)
-- **Eye Tracking Tutorials**: GeeksforGeeks and various educational resources
-- **Commercial Solutions**: Tobii, Eyetech, and other eye-tracking pioneers
 
 ---
 
@@ -1238,8 +1230,3 @@ SOFTWARE.
 - [ ] Download desktop app or extension
 - [ ] Share feedback and contribute
 
----
-
-**Happy Watching! 👀🎬**
-
-*Let technology help you stay focused on what matters — the content you love.*
